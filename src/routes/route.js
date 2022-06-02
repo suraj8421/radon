@@ -1,30 +1,37 @@
 const express = require('express');
-const externalModule = require('./logger')
-
+const externalModul = require('../logger/logger')
+const externalModule=require('../util/helper')
+const externalModules = require('../validator/formater')
+const prb=require('../prb4/prb4')
 const router = express.Router();
 
 router.get('/test-me', function (req, res) {
-    console.log('The constant in logger route has a value '+externalModule.endpoint)
-    console.log('The current batch is '+externalModule.batch)
-    externalModule.log()
+    
+    externalModul.welcome()
+         externalModule.printDate()
+         externalModule.getCurrentMonth()
+         externalModule.getCohortData()
+    externalModule.case1q
+    externalModule.case2
+    externalModule.case3
+   
+
     res.send('My first ever api!')
 });
+router.get('/hello', function (req, res){
 
-router.get('/test-me1', function (req, res) {
-    res.send('My second ever api!')
-});
+prb.months
+prb.number
+prb.object
+prb.Router
 
-router.get('/test-me2', function (req, res) {
-    res.send('My third api!')
-});
 
-router.get('/test-me3', function (req, res) {
-    res.send('My 4th api!')
-});
 
-router.get('/test-me4', function (req, res) {
-    res.send('My last api!')
-});
+    res.send('My node js api')
+
+})
+
+
 
 module.exports = router;
 // adding this comment for no reason
