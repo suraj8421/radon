@@ -100,10 +100,10 @@ const  Deleteuser= async function (req, res) {
     
     let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, {isDeleted: true},{new:true});
     res.send({ status: true, data: updatedUser });
-    if (updatedUser.isDeleted==true){
-      return res.send("user already deleted")
+    
     }
-  };
+    
+  
 
 module.exports.createUser = createUser;
 module.exports.getUserData = getUserData;
