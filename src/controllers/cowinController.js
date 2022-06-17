@@ -78,8 +78,75 @@ let getOtp = async function (req, res) {
     }
 }
 
+let getDistrictSessions = async function (req,res){
+    try {
+        let district = req.query.districtid
+        let date =req.query.date
+        let options = {
+            method:"get",
+            url: `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id= ${district}&date=${date}`
+
+
+        }
+
+            let result = await axios(options)
+            console.log(result.data)
+            res.status(200).send({ msg: result.data })
+
+
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).send({ msg: err.message })
+        }
+    }
+
+ let getSortedCities = async function(req,res){
+try{
+let cities= ["Bengaluru","Mumbai", "Delhi", "Kolkata", "Chennai", "London", "Moscow"]
+let citiObjectArray =[]
+for (i=0;i<cities.length;i++) {
+    let obj ={city:cities[i]  }
+    let resp= await axios.get( 'http://api.openweathermap.org/data/2.5/weather?q=London&appid=8ad99db00cf86363311f25573f194ee7 ')  
+    console.log (resp.data.main.temp)
+    obj.temp = resp.data.main.temp
+    citiObjectArray.push(obj)
+    let sorted = citiObjectArray.sort(function(a,b){return a.temp - b.temp})
+    console.log(sorted)
+    res.status(200).send({status:true,data:sorted})
+}
+
+}
+catch (err) {
+    console.log(err)
+    res.status(500).send({ msg: err.message })
+}
+ }
+
+let memeCreater = async function(req,res){
+    try{
+        let option ={
+            method:"post",
+            url: 'http://api.imgfhttpslip.com/caption_image?name=ChangeMyMind&id=129242436'
+        }
+        let result= await axios(option)
+
+        res.send({data: result.data})
+
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send({ msg: err.message })
+    }
+}
+ 
+
+
 
 module.exports.getStates = getStates
 module.exports.getDistricts = getDistricts
 module.exports.getByPin = getByPin
 module.exports.getOtp = getOtp
+module.exports.getDistrictSessions = getDistrictSessions
+module.exports.getSortedCities =getSortedCities
+module.exports.memeCreater =memeCreater
