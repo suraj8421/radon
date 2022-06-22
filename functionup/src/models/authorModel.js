@@ -17,7 +17,7 @@ const authorSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        match: /.+\@.+\..+/,
+        //match: /.+\@.+\..+/,
         unique: true
     },
     password:{
@@ -29,8 +29,8 @@ const authorSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('Author', authorSchema)
-
+//module.exports = mongoose.model('Author', authorSchema)
+module.exports = mongoose.models['Author'] || mongoose.model('Author', authorSchema)
 
 
 

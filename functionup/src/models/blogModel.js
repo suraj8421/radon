@@ -33,17 +33,15 @@ const blogSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    // deletedAt: {
-    //     //type: Boolean,
-    //     //default: false,
-    //     //timestamps: true
-    //     type: Date.now()
-    // },
-    // publishedAt: {
-    //     type: Boolean,
-    //     default: false,
-    //     timestamps: true
-    // },
+    deletedAt: {
+        //type: Boolean,
+        //default: false,
+        //timestamps: true
+        type: Date
+    },
+    publishedAt: {
+        type: Date
+    }
 
 
 }, { timestamps: true })
