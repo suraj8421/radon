@@ -5,21 +5,21 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 const blogSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        //required: true
     },
     body: {
         type: String,
-        required: true
+        //required: true
     },
     authorId: {
-        required: true,
+        //required: true,
         type: ObjectId,
         ref: "Author"
     },
     tages: [String],
     category: {
-        type: [String],
-        required: true,
+        type: ["String"],
+        //required: true,
     },
     subcategory: {
         type: [String],
@@ -34,9 +34,6 @@ const blogSchema = new mongoose.Schema({
         default: false
     },
     deletedAt: {
-        //type: Boolean,
-        //default: false,
-        //timestamps: true
         type: Date
     },
     publishedAt: {

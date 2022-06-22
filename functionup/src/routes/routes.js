@@ -6,11 +6,15 @@ const mid=require("../middleware/mid")
 
 
 
-router.post("/authors", autherController.createAuthor)
+router.post("/authors",mid.createAuthMid, autherController.createAuthor)
 
-router.post("/blogs",mid.authorIdValidation, blogController.createBlog)
+router.post("/blogs",mid.blogSchemaValidation, blogController.createBlog)
 
 router.get("/Blogs",blogController.getBlog)
 
-router.put("/blogs/:blogId",blogController.updateBlog)
+router.put("/blogs/:blogId",mid.authorIdValidation ,blogController.updateBlog)
+
+router.delete("/blogs/:blogId",mid.authorIdValidation, blogController.deleteBlog)
+
+router.delete("/blogs", mid.deleteByParMid,blogController.deleteBlogByParams )
 module.exports = router;
