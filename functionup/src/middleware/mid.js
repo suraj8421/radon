@@ -1,6 +1,13 @@
 const AuthorModel = require("../models/authorModel")
 const blogModel = require("../models/blogModel")
 
+// Required regex : 
+let userCheck = /^[a-z][a-z]+\d*$|^[a-z]\d\d+$/i;
+let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
+let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+
+
 const authorIdValidation = async function (req, res, next) {
     try {
         let blogId = req.params.blogId
@@ -51,9 +58,7 @@ const blogSchemaValidation = async function (req, res, next) {
 
 const createAuthMid = async function (req, res, next) {
 
-    let userCheck = /^[a-z][a-z]+\d*$|^[a-z]\d\d+$/i;
-    let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
-    let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
 
     // let title = req.body.title
     // if (!title) return res.status(404).send({ msg: " title is required " })
@@ -99,9 +104,26 @@ const deleteByParMid = async function (req, res, next) {
     next()
 }
 
+// To check only Email-Id and Password
+
+const checkEmailandPassword = async function (req, res, next) {
+
+    let email = req.body.emailId;
+    let password = req.body.password;
+    if (!email) return res.status(400).send({ status: false, msg: "Email-Id is required" });
+    if (!email.match(mailRegex)) return res.status(400).send({ msg: "Email-Id is not valid" })
+    if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
+    if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 capital alphabet and minimum 8 elements" })
+    next()
+}
+
+
+
+
 
 
 module.exports.authorIdValidation = authorIdValidation
 module.exports.blogSchemaValidation = blogSchemaValidation
 module.exports.createAuthMid = createAuthMid
 module.exports.deleteByParMid = deleteByParMid
+module.exports.checkEmailandPassword = checkEmailandPassword
