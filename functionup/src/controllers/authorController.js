@@ -1,7 +1,5 @@
 const AuthorModel = require("../models/AuthorModel")
-const jwt= require("jsonwebtoken");
-
-
+const jwt = require("jsonwebtoken");
 
 const createAuthor = async function (req, res) {
   try {
@@ -15,8 +13,30 @@ const createAuthor = async function (req, res) {
   }
 };
 
+const loginAuthor = async function (req, res) {
+  let email = req.body.emailId;
+  let password = req.body.password;
+
+  let Auther = await AuthorModel.findOne({ email: email, password: password });
+  console.log(Auther)
+  if (!Auther) return res.status(404).send({ status: false, msg: "Email-Id or the password is not exist" });
+
+  let token = jwt.sign(
+    {
+      AutherId: Auther._id.toString(),
+      batch: "Radon",
+      organisation: "FunctionUp",
+    },
+    "functionup-project-1"
+  );
+  res.setHeader("x-auth-token", token);
+  res.status(201).send({ status: true, token: token });
+};
+
+
 
 
 
 
 module.exports.createAuthor = createAuthor
+module.exports.loginAuthor = loginAuthor

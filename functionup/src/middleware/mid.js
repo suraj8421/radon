@@ -1,6 +1,14 @@
 const AuthorModel = require("../models/authorModel")
 const blogModel = require("../models/blogModel")
+const jwt = require("jsonwebtoken");
 
+// Required regex : 
+let userCheck = /^[a-z][a-z]+\d*$|^[a-z]\d\d+$/i;
+let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
+let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+
+// ton checking The Author Id Validation
 const authorIdValidation = async function (req, res, next) {
     try {
         let blogId = req.params.blogId
@@ -19,6 +27,7 @@ const authorIdValidation = async function (req, res, next) {
     }
 }
 
+// To Checking The Validation Of Blog Model Schema
 const blogSchemaValidation = async function (req, res, next) {
     try {
         let title = req.body.title
@@ -53,16 +62,13 @@ const blogSchemaValidation = async function (req, res, next) {
     }
 }
 
-
+// To checking The Validation Of Create Author Schema
 const createAuthMid = async function (req, res, next) {
     try {
-        let userCheck = /^[a-z][a-z]+\d*$|^[a-z]\d\d+$/i;
-        let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
-        let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-
         // let title = req.body.title
         // if (!title) return res.status(404).send({ msg: " title is required " })
         // if (title != "Mr" || title != "Mrs" || title != "Miss") return res.status(400).send({ msg: "title must be Mr/Mrs/Miss" })
+
 
         let firstName = req.body.fname
         if (!firstName) return res.status(404).send({ msg: "first Name is required " })
@@ -80,7 +86,7 @@ const createAuthMid = async function (req, res, next) {
 
         let password = req.body.password
         if (!password) return res.status(403).send({ msg: "password is required" })
-        if (!password.match(validPassword)) return res.status(400).send({ msg: "password is not valid" })
+        if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
 
 
         const autherMail = await AuthorModel.findOne({ email: data.email }); //email exist or not
@@ -93,7 +99,7 @@ const createAuthMid = async function (req, res, next) {
     }
 
 }
-
+// To checking the ValiDation of Delete By Param API
 const deleteByParMid = async function (req, res, next) {
     try {
         const authorId = req.query.authorId
@@ -114,7 +120,7 @@ const deleteByParMid = async function (req, res, next) {
     }
 }
 
-
+// To checking User Is LogIn or Not
 const authenticate = function (req, res, next) {
     try {
         let token = req.headers["x-auth-token"];
@@ -132,15 +138,59 @@ const authenticate = function (req, res, next) {
     }
 }
 
-const authorise = function(req, res, next) {
+// for blog creation (2nd API)
+const createBlogAuth= async function (req,res,next)
+{
+    let authorid = req.body.authorId
     let token = req.headers["x-auth-token"];
     let decodedToken = jwt.verify(token, 'functionup-project-1')
-    let authorToBeModified = req.params.authorId
-    let authorLoggedIn = decodedToken.authorId
+    let authorLoggedIn = decodedToken.authorid
+    if (authorid != authorLoggedIn) return res.send({ status: false, msg: "Author logged is not allowed to modify the requested or You have given invalid 'authorId' " })
+    next()
+    
+}
+// For Delete By Param
+const delteBlogAuthByQP= async function (req,res,next)
+{
+    let authorid = req.query.authorId
+    let token = req.headers["x-auth-token"];
+    let decodedToken = jwt.verify(token, 'functionup-project-1')
+    let authorLoggedIn = decodedToken.AutherId
+    if (authorid != authorLoggedIn) return res.send({ status: false, msg: "Author logged is not allowed to modify the requested or You have given invalid 'authorId' " })
+    next()
+    
+}
 
-    if(authorToBeModified != authorLoggedIn) return res.send({status: false, msg: 'author logged is not allowed to modify the requested Author data'})
+
+//update Blog(3rd API) and Delete By Id (5th API)
+const authorise = async function (req, res, next) {
+    let blogId = req.params.blogId
+    let token = req.headers["x-auth-token"];
+    let decodedToken = jwt.verify(token, 'functionup-project-1')
+    let authId = await blogModel.findOne({ _id: blogId }).select({ authorId: 1, _id: 0 })
+    let authorId = authId.authorId.valueOf()
+
+    let authorLoggedIn = decodedToken.AutherId
+    if (authorId != authorLoggedIn) return res.send({ status: false, msg: "author logged is not allowed to modify the requested" })
     next()
 }
+
+
+// to checkinf Email validation at time of Login (2.1 API)
+const checkEmailandPassword = async function (req, res, next) {
+
+    let email = req.body.emailId;
+    let password = req.body.password;
+    if (!email) return res.status(400).send({ status: false, msg: "Email-Id is required" });
+    if (!email.match(mailRegex)) return res.status(400).send({ msg: "Email-Id is not valid" })
+
+    // if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
+    // if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
+    next()
+}
+
+
+
 
 
 
@@ -150,4 +200,7 @@ module.exports.blogSchemaValidation = blogSchemaValidation
 module.exports.createAuthMid = createAuthMid
 module.exports.deleteByParMid = deleteByParMid
 module.exports.authenticate = authenticate
-module.exports.authorise=authorise
+module.exports.authorise = authorise
+module.exports.checkEmailandPassword = checkEmailandPassword
+module.exports.createBlogAuth=createBlogAuth
+module.exports.delteBlogAuthByQP=delteBlogAuthByQP
