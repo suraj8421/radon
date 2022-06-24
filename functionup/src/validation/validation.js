@@ -17,7 +17,6 @@ const authorIdValidation = async function (req, res, next) {
         else {
             let isblog = await blogModel.findById(blogId)
             if (!isblog) return res.status(400).send({ status: false, msg: "No such user exists" })
-            //req.userId!=isblog._Id
         }
         next()
     }
@@ -32,13 +31,13 @@ const authorIdValidation = async function (req, res, next) {
 const blogSchemaValidation = async function (req, res, next) {
     try {
         let title = req.body.title
-        if (!title) return res.status(400).send({ msg: "title is need to be given" })
+        if (typeof(title)!= 'string'||!title) return res.status(400).send({ msg: "title is need to be given" })
 
         let body = req.body.body
-        if (!body) return res.status(400).send({ msg: "body is need to be given" })
+        if (typeof(body)!= 'string'||!body) return res.status(400).send({ msg: "body is need to be given" })
 
         let authorId = req.body.authorId
-        if (!authorId) return res.status(400).send({ msg: "authorId is need to be given" })
+        if (typeof(authorId)!= 'string'||!authorId) return res.status(400).send({ msg: "authorId is need to be given" })
 
         if (authorId.length != 24) return res.status(400).send({ status: false, msg: "invalid User Id" })
         else {
@@ -48,12 +47,12 @@ const blogSchemaValidation = async function (req, res, next) {
         }
 
         let category = req.body.category
-        if (!category) return res.status(400).send({ status: false, msg: "category is need to required" })
+        if (typeof(category)!= 'string'||!category) return res.status(400).send({ status: false, msg: "category is need to required" })
         length = category.length
         if (length == 0) return res.status(400).send({ msg: "category is need to be given" })
 
         let subcategory = req.body.subcategory
-        if (!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
+        if (typeof(subcategory)!= 'string'||!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
         length = subcategory.length
         if (length == 0) return res.status(400).send({ msg: "subcategory is need to be given" })
 
@@ -70,7 +69,7 @@ const blogSchemaValidation = async function (req, res, next) {
 const createAuthMid = async function (req, res, next) {
     try {
         let title = req.body.title
-        if (!title) return res.status(404).send({ msg: " title is required " })
+        if (typeof(title)!= 'string'||!title) return res.status(404).send({ msg: " title is required " })
         if (title == "Mr" || title == "Mrs" || title == "Miss"){ title=title}
         else
         return res.status(400).send({ msg: "title must be Mr/Mrs/Miss" })
@@ -87,11 +86,11 @@ const createAuthMid = async function (req, res, next) {
         let data = req.body;
 
         let email = req.body.email
-        if (!email) return res.status(403).send({ msg: "email is required" })
+        if (typeof(email)!= 'string'||!email) return res.status(403).send({ msg: "email is required" })
         if (!email.match(mailRegex)) return res.status(400).send({ msg: "email is not valid" })
 
         let password = req.body.password
-        if (!password) return res.status(403).send({ msg: "password is required" })
+        if (typeof(password)!= 'string'||!password) return res.status(403).send({ msg: "password is required" })
         if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
 
 
