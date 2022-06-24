@@ -3,28 +3,29 @@ const router = express.Router();
 const autherController= require("../controllers/authorController")
 const blogController=require("../controllers/blogController")
 const mid=require("../middleware/mid")
+const Vald=require("../validation/validation.js")
 
 
 // Phase 1
 
-router.post("/authors",mid.createAuthMid, autherController.createAuthor)
+router.post("/authors",Vald.createAuthMid, autherController.createAuthor)
 
-router.post("/blogs",mid.authenticate,mid.createBlogAuth,mid.blogSchemaValidation, blogController.createBlog)
+router.post("/blogs",mid.Authentication,mid.Authorisation,Vald.blogSchemaValidation, blogController.createBlog)
 
-router.get("/Blogs",blogController.getBlog)
+router.get("/blogs",blogController.getBlog)
 
-router.put("/blogs/:blogId",mid.authenticate,mid.authorise,mid.authorIdValidation ,blogController.updateBlog)
-
-
-router.delete("/blogs/:blogId",mid.authenticate,mid.authorise,mid.authorIdValidation, blogController.deleteBlog)
+router.put("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.authorIdValidation ,blogController.updateBlog)
 
 
-router.delete("/blogs",mid.authenticate,mid.delteBlogAuthByQP,mid.deleteByParMid,blogController.deleteBlogByParams )
+router.delete("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.authorIdValidation, blogController.deleteBlog)
+
+
+router.delete("/blogs",mid.Authentication,mid.Authorisation,Vald.deleteByParMid,blogController.deleteBlogByParams )
 
 
 // Phase 2
 
-router.post("/loginAuthor",mid.checkEmailandPassword, autherController.loginAuthor)
+router.post("/loginAuthor",Vald.checkEmailandPassword, autherController.loginAuthor)
 
 
 

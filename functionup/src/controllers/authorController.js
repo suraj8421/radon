@@ -29,7 +29,7 @@ const loginAuthor = async function (req, res) {
     },
     "functionup-project-1"
   );
-  res.setHeader("x-auth-token", token);
+  res.setHeader("x-api-key", token);
   res.status(201).send({ status: true, token: token });
 };
 
