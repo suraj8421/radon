@@ -6,66 +6,10 @@ let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
 let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
 
-//=====================================================Authentication=================================================
-// ton checking The Author Id Validation
-const authorIdValidation = async function (req, res, next) {
-    try {
-        let blogId = req.params.blogId
-        if (!blogId) return res.status(400).send({ msg: "blogId is need to be given" })
+//====================================================================================
+//                        The Validation Of Create Author Schema
+//                                    (API - 1)
 
-        if (blogId.length != 24) return res.status(400).send({ status: false, msg: "invalid blogId" })
-        else {
-            let isblog = await blogModel.findById(blogId)
-            if (!isblog) return res.status(400).send({ status: false, msg: "No such user exists" })
-        }
-        next()
-    }
-    catch (error) {
-        console.log("This is the error :", error.message)
-        res.status(500).send({ msg: "Error", error: error.message })
-    }
-}
-
-//=====================================================Authentication=================================================
-// To Checking The Validation Of Blog Model Schema
-const blogSchemaValidation = async function (req, res, next) {
-    try {
-        let title = req.body.title
-        if (typeof(title)!= 'string'||!title) return res.status(400).send({ msg: "title is need to be given" })
-
-        let body = req.body.body
-        if (typeof(body)!= 'string'||!body) return res.status(400).send({ msg: "body is need to be given" })
-
-        let authorId = req.body.authorId
-        if (typeof(authorId)!= 'string'||!authorId) return res.status(400).send({ msg: "authorId is need to be given" })
-
-        if (authorId.length != 24) return res.status(400).send({ status: false, msg: "invalid User Id" })
-        else {
-            let isAuthor = await AuthorModel.findById(authorId)
-            if (!isAuthor) return res.status(400).send({ status: false, msg: "No such user exists" })
-            //req.userId!=isAuthor._Id
-        }
-
-        let category = req.body.category
-        if (typeof(category)!= 'string'||!category) return res.status(400).send({ status: false, msg: "category is need to required" })
-        length = category.length
-        if (length == 0) return res.status(400).send({ msg: "category is need to be given" })
-
-        let subcategory = req.body.subcategory
-        if (typeof(subcategory)!= 'string'||!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
-        length = subcategory.length
-        if (length == 0) return res.status(400).send({ msg: "subcategory is need to be given" })
-
-        next()
-    } catch (error) {
-        console.log("This is the error :", error.message)
-        res.status(500).send({ msg: "Error", error: error.message })
-    }
-}
-
-
-//=====================================================Authentication=================================================
-// To checking The Validation Of Create Author Schema
 const createAuthMid = async function (req, res, next) {
     try {
         let title = req.body.title
@@ -104,9 +48,77 @@ const createAuthMid = async function (req, res, next) {
     }
 
 }
-//=====================================================Authentication=================================================
 
-// To checking the ValiDation of Delete By Param API
+
+//====================================================================================
+//                          The Validation Of Blog Model Schema
+//                                    (API - 2)
+
+const blogSchemaValidation = async function (req, res, next) {
+    try {
+        let title = req.body.title
+        if (typeof(title)!= 'string'||!title) return res.status(400).send({ msg: "title is need to be given" })
+
+        let body = req.body.body
+        if (typeof(body)!= 'string'||!body) return res.status(400).send({ msg: "body is need to be given" })
+
+        let authorId = req.body.authorId
+        if (typeof(authorId)!= 'string'||!authorId) return res.status(400).send({ msg: "authorId is need to be given" })
+
+        if (authorId.length != 24) return res.status(400).send({ status: false, msg: "invalid User Id" })
+        else {
+            let isAuthor = await AuthorModel.findById(authorId)
+            if (!isAuthor) return res.status(400).send({ status: false, msg: "No such user exists" })
+        }
+
+        let category = req.body.category
+        if (typeof(category)!= 'string'||!category) return res.status(400).send({ status: false, msg: "category is need to required" })
+        length = category.length
+        if (length == 0) return res.status(400).send({ msg: "category is need to be given" })
+
+        let subcategory = req.body.subcategory
+        if (typeof(subcategory)!= 'string'||!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
+        length = subcategory.length
+        if (length == 0) return res.status(400).send({ msg: "subcategory is need to be given" })
+
+        next()
+    } catch (error) {
+        console.log("This is the error :", error.message)
+        res.status(500).send({ msg: "Error", error: error.message })
+    }
+}
+
+
+//====================================================================================
+//                               The Blog Id Validation
+//                                    (API - 4 & 5)
+
+
+const blogIdValidation = async function (req, res, next) {
+    try {
+        let blogId = req.params.blogId
+        if (!blogId) return res.status(400).send({ msg: "blogId is need to be given" })
+
+        if (blogId.length != 24) return res.status(400).send({ status: false, msg: "invalid blogId" })
+        else {
+            let isblog = await blogModel.findById(blogId)
+            if (!isblog) return res.status(400).send({ status: false, msg: "No such user exists" })
+        }
+        next()
+    }
+    catch (error) {
+        console.log("This is the error :", error.message)
+        res.status(500).send({ msg: "Error", error: error.message })
+    }
+}
+
+
+//====================================================================================
+
+//                          The ValiDation of Param queries attribute
+//                                         (API - 6)
+
+
 const deleteByParMid = async function (req, res, next) {
     try {
         const authorId = req.query.authorId
@@ -127,8 +139,12 @@ const deleteByParMid = async function (req, res, next) {
     }
 }
 
-//=====================================================Authentication=================================================
-// to checkinf Email validation at time of Login (2.1 API)
+
+//======================================================================================================
+//                        The validation of Email-Id & Password 
+//                                      ( API - 2.1 )
+
+
 const checkEmailandPassword = async function (req, res, next) {
 
     let email = req.body.emailId;
@@ -141,7 +157,11 @@ const checkEmailandPassword = async function (req, res, next) {
     next()
 }
 
-module.exports.authorIdValidation = authorIdValidation
+
+
+
+
+module.exports.blogIdValidation = blogIdValidation
 module.exports.blogSchemaValidation = blogSchemaValidation
 module.exports.createAuthMid = createAuthMid
 module.exports.deleteByParMid = deleteByParMid

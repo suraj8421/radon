@@ -1,6 +1,11 @@
 const AuthorModel = require("../models/AuthorModel")
 const jwt = require("jsonwebtoken");
 
+
+
+//=======================================(API 1)======================================
+
+
 const createAuthor = async function (req, res) {
   try {
     let data = req.body;
@@ -12,6 +17,11 @@ const createAuthor = async function (req, res) {
     res.status(500).send({ msg: "Error", error: error.message })
   }
 };
+
+
+
+//=======================================(API 2.1)====================================
+
 
 const loginAuthor = async function (req, res) {
   let email = req.body.emailId;

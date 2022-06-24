@@ -1,6 +1,9 @@
-const AuthorModel = require("../models/authorModel")
+
 const blogModel = require("../models/blogModel")
 const jwt = require("jsonwebtoken");
+
+//================================Authentication Middleware===========================
+//                                  (API - 2,3,4,5 & 6)
 
 
 const Authentication = async (req, res, next) => {
@@ -16,26 +19,41 @@ const Authentication = async (req, res, next) => {
     }
 }
 
-const Authorisation = async function(req,res,next){
+
+
+//================================Authorisation Middleware============================
+//                                  (API - 2,3,4,5 & 6)
+
+
+const Authorisation = async (req,res,next) => {
     let authorLoggedIn = req.authorIdnew
     let authoridBody = req.body.authorId
     let authoridQuery = req.query.authorId
     let blogId = req.params.blogId
+   // if((!authoridQuery) || (!authoridBody) || (!blogId) )return res.status(400).send({ status: false, msg: "authorId is required" })
+
+   if (authoridBody || authoridQuery || blogId) {
 
     if(authoridBody){    
         if (authoridBody != authorLoggedIn) return res.status(403).send({ status: false, msg: "Author logged is not allowed to modify the requested or You have given invalid 'authorId'" })
         next()
     }
-    if(authoridQuery){
+
+    if(authoridQuery ){
         if (authoridQuery != authorLoggedIn) return res.status(403).send({ status: false, msg: "Author logged is not allowed to modify the requested or You have given invalid 'authorId'" })
         next()
     }
+ 
+
     if (blogId){
         let authId = await blogModel.findOne({ _id: blogId }).select({ authorId: 1, _id: 0 })
         let authorId = authId.authorId.valueOf()
         if (authorId != authorLoggedIn) return res.status(403).send({ status: false, msg:"Author logged is not allowed to modify the requested or You have given invalid 'authorId'" })
         next()
     }
+}
+else
+return res.status(400).send({ status: false, msg: "authorId is required" })
 
 
 }

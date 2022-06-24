@@ -2,6 +2,9 @@ const AuthorModel = require("../models/AuthorModel")
 const blogModel = require("../models/blogModel")
 
 
+//=======================================(API 2)======================================
+
+
 const createBlog = async function (req, res) {
     try {
         let data = req.body
@@ -13,6 +16,10 @@ const createBlog = async function (req, res) {
         res.status(500).send({ msg: "Error", error: error.message })
     }
 }
+
+
+//=======================================(API 3)======================================
+
 
 const getBlog = async function (req, res) {
     let authorId = req.query.authorId
@@ -26,8 +33,8 @@ const getBlog = async function (req, res) {
         return res.status(200).send({ status: "true", data: allBlogs })
         }
     else{
-        let Blogs = await blogModel.find({$and:[{isPublished: "true"}, {isDeleted: "false"}], $or: [{ authorId: authorId }, { category: category }, { tages: tages }] })
-        if (!Blogs) return res.status(404).send({ status: "false", msg: "No Document found", })
+        let Blogs = await blogModel.find({$and:[{isPublished: "true"}, {isDeleted: "false"}], $or: [{ authorId: authorId }, { category: category }, { tages: tages }, {subcategory: subcategory }] })
+        if (!Blogs || Blogs.length==0) return res.status(404).send({ status: "false", msg: "No Document found", })
         res.status(200).send({ status: "true", data: Blogs })
     }
 }
@@ -36,6 +43,10 @@ const getBlog = async function (req, res) {
         res.status(500).send({ msg: "Error", error: error.message })
     }
 }
+
+
+
+//=======================================(API 4)======================================
 
 
 const updateBlog = async function (req, res) {
@@ -59,6 +70,10 @@ const updateBlog = async function (req, res) {
 
 }
 
+
+//=======================================(API 5)======================================
+
+
 const deleteBlog = async function (req, res) {
     try {
         const blogId = req.params.blogId
@@ -81,6 +96,9 @@ const deleteBlog = async function (req, res) {
 }
   
 
+//=======================================(API 6)======================================
+
+
 const deleteBlogByParams = async function (req, res) {
     try {
         const authorId = req.query.authorId
@@ -88,9 +106,14 @@ const deleteBlogByParams = async function (req, res) {
         const tages = req.query.tages
         const subcategory = req.query.subcategory
         const unpublished = req.query.isPublished
-
+        const blogisDeletedOrNot = await blogModel.findOne({ authorId: authorId, category: category, tages: tages, subcategory: subcategory, isPublished: unpublished })
+        if (!blogisDeletedOrNot) return res.status(404).send({Status:"false",msg:"Not Matching Information Found With This"})
+        if (!blogisDeletedOrNot.isDeleted == false) {
+            return res.status(404).send({ status: false, msg: "User is not Present / it's a deleted User" })
+        }
         const findForDelete = await blogModel.findOneAndUpdate({ authorId: authorId, category: category, tages: tages, subcategory: subcategory, isPublished: unpublished }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true })
-        res.status(201).send({ Msg: findForDelete })
+        return res.status(201).send({ Msg: findForDelete })
+
     }
     catch (error) {
         console.log("This is the Error", error.message)

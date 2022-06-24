@@ -6,26 +6,36 @@ const mid=require("../middleware/mid")
 const Vald=require("../validation/validation.js")
 
 
-// Phase 1
+//                                     Phase : 1
 
+//                            Create authors  : API - 1
 router.post("/authors",Vald.createAuthMid, autherController.createAuthor)
 
+
+//                             Create blogs  : API - 2
 router.post("/blogs",mid.Authentication,mid.Authorisation,Vald.blogSchemaValidation, blogController.createBlog)
 
-router.get("/blogs",blogController.getBlog)
 
-router.put("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.authorIdValidation ,blogController.updateBlog)
-
-
-router.delete("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.authorIdValidation, blogController.deleteBlog)
+//                              Get blogs  : API - 3
+router.get("/blogs", mid.Authentication, blogController.getBlog)
 
 
+//                             Update blog  : API - 4
+router.put("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.blogIdValidation ,blogController.updateBlog)
+
+
+//                         Delete blog by blogId  : API - 5
+router.delete("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.blogIdValidation, blogController.deleteBlog)
+
+
+//                       Delete blog by query params  : API - 6
 router.delete("/blogs",mid.Authentication,mid.Authorisation,Vald.deleteByParMid,blogController.deleteBlogByParams )
 
 
-// Phase 2
+//                                   Phase : 2
 
-router.post("/loginAuthor",Vald.checkEmailandPassword, autherController.loginAuthor)
+//             Generate JWT and login for authors  : API - 2.1
+router.post("/login",Vald.checkEmailandPassword, autherController.loginAuthor)
 
 
 
