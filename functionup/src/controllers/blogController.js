@@ -6,9 +6,7 @@ const isValid = function (x) {
     if (typeof x === 'undefined' || x === null) return false
     if (typeof x === 'string' && x.trim().length === 0) return false
 }
-const isValidObjectId = function (x) {
-    return mongoose.Types.ObjectId.isValid(x)
-}
+
 const isValidBody = function (y) {
     return Object.keys(y).length > 0
 }
@@ -19,6 +17,8 @@ const isValidBody = function (y) {
 const createBlog = async function (req, res) {
     try {
         let data = req.body
+        console.log(data)
+        if(data.isPublished==true){data[`publishedAt`] = new Date()}
         let create = await blogModel.create(data)
         return res.status(201).send({ status: "true", data: create })
     }
@@ -65,10 +65,20 @@ const updateBlog = async function (req, res) {
         let blogId = await blogModel.findById(req.params.blogId)
         if (!blogId) return res.status(404).send({ status: false, msg: "No such User Exits" })
 
+        if (req.body.tags ) {
+            var tagsData= blogId.tags
+            var swap =tagsData.push((req.body.tags).toString())
+            data[`tags`]= tagsData
+        
+        
+            }
+
         if (req.body.category ) {
         var categoryData= blogId.category
         var swap =categoryData.push((req.body.category).toString())
         data[`category`]= categoryData
+        // let updateData = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
+        // return res.status(200).send({ status: true, msg: updateData })
         }
 
         if (req.body.subcategory ) {
@@ -80,10 +90,13 @@ const updateBlog = async function (req, res) {
         if (!blogId.isDeleted == false) {
            return res.status(404).send({ status: false, msg: "User is not Present / it's a deleted User" })
         }
+        if(data.isPublished==true){
         data[`isPublished`] = true
-        data[`publishedAt`] = new Date();
+        data[`publishedAt`] = new Date();}
+        
         let updateData = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
         return res.status(200).send({ status: true, msg: updateData })
+
     }
 
     catch (error) {
@@ -129,8 +142,14 @@ const deleteBlogByParams = async function (req, res) {
         const tags = req.query.tags
         const subcategory = req.query.subcategory
         const unpublished = req.query.isPublished
+         
+        if(!isValid(category)) return res.send("Error")
+
+
         const blogisDeletedOrNot = await blogModel.findOne({ authorId: authorId, category: category, tags: tags, subcategory: subcategory, isPublished: unpublished })
-        //const blogisDeletedOrNot = await blogModel.findOne(query)
+        //const blogisDeletedOrNot = await blogModel.findOne(query)   // Optional 
+
+
         if (!blogisDeletedOrNot) return res.status(404).send({ Status: "false", msg: "Not Matching Information Found With This" })
         if (!blogisDeletedOrNot.isDeleted == false) {
             return res.status(404).send({ status: false, msg: "User is not Present / it's a deleted User" })
@@ -149,8 +168,8 @@ const deleteBlogByParams = async function (req, res) {
 
 
 
-module.exports.updateBlog = updateBlog
 module.exports.createBlog = createBlog
 module.exports.getBlog = getBlog
+module.exports.updateBlog = updateBlog
 module.exports.deleteBlogByParams = deleteBlogByParams
 module.exports.deleteBlog = deleteBlog

@@ -17,7 +17,7 @@ router.post("/blogs",mid.Authentication,mid.Authorisation,Vald.blogSchemaValidat
 
 
 //                              Get blogs  : API - 3
-router.get("/blogs", mid.Authentication, blogController.getBlog)
+router.get("/blogs", mid.Authentication,  blogController.getBlog)
 
 
 //                             Update blog  : API - 4

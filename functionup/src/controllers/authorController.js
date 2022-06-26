@@ -28,13 +28,13 @@ const loginAuthor = async function (req, res) {
   let email = req.body.emailId;
   let password = req.body.password;
 
-  let Auther = await AuthorModel.findOne({ email: email, password: password });
-  console.log(Auther)
-  if (!Auther) return res.status(404).send({ status: false, msg: "Email-Id or the password is not exist" });
+  let Author = await AuthorModel.findOne({ email: email, password: password });
+  console.log(Author)
+  if (!Author) return res.status(404).send({ status: false, msg: "Email-Id or the password is not exist" });
 
   let token = jwt.sign(
     {
-      AutherId: Auther._id.toString(),
+      AuthorId: Author._id.toString(),
       batch: "Radon",
       organisation: "FunctionUp",
     },

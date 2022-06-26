@@ -1,10 +1,14 @@
 const AuthorModel = require("../models/authorModel")
 const blogModel = require("../models/blogModel")
+const mongoose = require('mongoose');
 
 let userCheck = /^[a-zA-Z\-]+$/;
 let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
 let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
+const isValidObjectId = function (x) {            // Check mongo Id 
+    return mongoose.Types.ObjectId.isValid(x)
+}
 
 //====================================================================================
 //                        The Validation Of Create Author Schema
@@ -64,12 +68,7 @@ const blogSchemaValidation = async function (req, res, next) {
 
         let authorId = req.body.authorId
         if (typeof (authorId) != 'string' || !authorId) return res.status(400).send({ msg: "authorId is need to be given" })
-
-        if (authorId.length != 24) return res.status(400).send({ status: false, msg: "invalid User Id" })
-        else {
-            let isAuthor = await AuthorModel.findById(authorId)
-            if (!isAuthor) return res.status(400).send({ status: false, msg: "No such user exists" })
-        }
+        if (!isValidObjectId(blogId)) return res.status(400).send({ status: false, msg: "invalid blogId" })
 
         let category = req.body.category
         if (!category) return res.status(400).send({ status: false, msg: "category is need to required" })
@@ -77,10 +76,10 @@ const blogSchemaValidation = async function (req, res, next) {
         if (length == 0) return res.status(400).send({ msg: "category is need to be given" })
 
         let subcategory = req.body.subcategory
-        if (!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
+        if(subcategory){
         length = subcategory.length
         if (length == 0) return res.status(400).send({ msg: "subcategory is need to be given" })
-
+        }
         next()
     } catch (error) {
         console.log("This is the error :", error.message)
@@ -153,8 +152,8 @@ const checkEmailandPassword = async function (req, res, next) {
         if (!email) return res.status(400).send({ status: false, msg: "Email-Id is required" });
         if (!email.match(mailRegex)) return res.status(400).send({ msg: "Email-Id is not valid" })
 
-        // if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
-        // if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
+         if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
+         if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
         next()
     }
     catch (error) {
