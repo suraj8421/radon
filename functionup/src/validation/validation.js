@@ -13,28 +13,28 @@ let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const createAuthMid = async function (req, res, next) {
     try {
         let title = req.body.title
-        if (typeof(title)!= 'string'||!title) return res.status(404).send({ msg: " title is required " })
-        if (title == "Mr" || title == "Mrs" || title == "Miss"){ title=title}
+        if (typeof (title) != 'string' || !title) return res.status(404).send({ msg: " title is required " })
+        if (title == "Mr" || title == "Mrs" || title == "Miss") { title = title }
         else
-        return res.status(400).send({ msg: "title must be Mr/Mrs/Miss" })
+            return res.status(400).send({ msg: "title must be Mr/Mrs/Miss" })
 
 
         let firstName = req.body.fname
-        if (typeof(firstName)!= 'string'||!firstName) return res.status(404).send({ msg: "first Name is required " })
+        if (typeof (firstName) != 'string' || !firstName) return res.status(404).send({ msg: "first Name is required " })
         if (!firstName.match(userCheck)) return res.status(400).send({ msg: "first Name is not valid " })
 
         let lastName = req.body.lname
-        if (typeof(lastName)!= 'string'||!lastName) return res.status(404).send({ msg: "last Name is required " })
+        if (typeof (lastName) != 'string' || !lastName) return res.status(404).send({ msg: "last Name is required " })
         if (!lastName.match(userCheck)) return res.status(400).send({ msg: "last Name is not valid " })
 
         let data = req.body;
 
         let email = req.body.email
-        if (typeof(email)!= 'string'||!email) return res.status(403).send({ msg: "email is required" })
+        if (typeof (email) != 'string' || !email) return res.status(403).send({ msg: "email is required" })
         if (!email.match(mailRegex)) return res.status(400).send({ msg: "email is not valid" })
 
         let password = req.body.password
-        if (typeof(password)!= 'string'||!password) return res.status(403).send({ msg: "password is required" })
+        if (typeof (password) != 'string' || !password) return res.status(403).send({ msg: "password is required" })
         if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
 
 
@@ -57,13 +57,13 @@ const createAuthMid = async function (req, res, next) {
 const blogSchemaValidation = async function (req, res, next) {
     try {
         let title = req.body.title
-        if (typeof(title)!= 'string'||!title) return res.status(400).send({ msg: "title is need to be given" })
+        if (typeof (title) != 'string' || !title) return res.status(400).send({ msg: "title is need to be given" })
 
         let body = req.body.body
-        if (typeof(body)!= 'string'||!body) return res.status(400).send({ msg: "body is need to be given" })
+        if (typeof (body) != 'string' || !body) return res.status(400).send({ msg: "body is need to be given" })
 
         let authorId = req.body.authorId
-        if (typeof(authorId)!= 'string'||!authorId) return res.status(400).send({ msg: "authorId is need to be given" })
+        if (typeof (authorId) != 'string' || !authorId) return res.status(400).send({ msg: "authorId is need to be given" })
 
         if (authorId.length != 24) return res.status(400).send({ status: false, msg: "invalid User Id" })
         else {
@@ -72,12 +72,12 @@ const blogSchemaValidation = async function (req, res, next) {
         }
 
         let category = req.body.category
-        if (typeof(category)!= 'string'||!category) return res.status(400).send({ status: false, msg: "category is need to required" })
+        if (!category) return res.status(400).send({ status: false, msg: "category is need to required" })
         length = category.length
         if (length == 0) return res.status(400).send({ msg: "category is need to be given" })
 
         let subcategory = req.body.subcategory
-        if (typeof(subcategory)!= 'string'||!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
+        if (!subcategory) return res.status(400).send({ status: false, msg: "subcategory is need to required" })
         length = subcategory.length
         if (length == 0) return res.status(400).send({ msg: "subcategory is need to be given" })
 
@@ -123,12 +123,12 @@ const deleteByParMid = async function (req, res, next) {
     try {
         const authorId = req.query.authorId
         const category = req.query.category
-        const tages = req.query.tages
+        const tags = req.query.tags
         const subcategory = req.query.subcategory
         const unpublished = req.query.isPublished
         if (!authorId) return res.status(400).send({ status: false, msg: "authorId is not given" })
         if (!category) return res.status(400).send({ status: false, msg: "category is not given" })
-        if (!tages) return res.status(400).send({ status: false, msg: "tages is not given" })
+        if (!tags) return res.status(400).send({ status: false, msg: "tags is not given" })
         if (!subcategory) return res.status(400).send({ status: false, msg: "subcategory is not given" })
         if (!unpublished) return res.status(400).send({ status: false, msg: "unpublished is not given" })
         next()
@@ -146,18 +146,22 @@ const deleteByParMid = async function (req, res, next) {
 
 
 const checkEmailandPassword = async function (req, res, next) {
+    try {
 
-    let email = req.body.emailId;
-    let password = req.body.password;
-    if (!email) return res.status(400).send({ status: false, msg: "Email-Id is required" });
-    if (!email.match(mailRegex)) return res.status(400).send({ msg: "Email-Id is not valid" })
+        let email = req.body.emailId;
+        let password = req.body.password;
+        if (!email) return res.status(400).send({ status: false, msg: "Email-Id is required" });
+        if (!email.match(mailRegex)) return res.status(400).send({ msg: "Email-Id is not valid" })
 
-    // if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
-    // if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
-    next()
+        // if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
+        // if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
+        next()
+    }
+    catch (error) {
+        console.log("This is the error :", error.message)
+        return res.status(500).send({ msg: "Error", error: error.message })
+    }
 }
-
-
 
 
 

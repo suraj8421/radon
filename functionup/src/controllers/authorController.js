@@ -14,7 +14,7 @@ const createAuthor = async function (req, res) {
   }
   catch (error) {
     console.log("This is the error :", error.message)
-    res.status(500).send({ msg: "Error", error: error.message })
+    return res.status(500).send({ msg: "Error", error: error.message })
   }
 };
 
@@ -24,6 +24,7 @@ const createAuthor = async function (req, res) {
 
 
 const loginAuthor = async function (req, res) {
+  try{
   let email = req.body.emailId;
   let password = req.body.password;
 
@@ -40,7 +41,12 @@ const loginAuthor = async function (req, res) {
     "functionup-project-1"
   );
   res.setHeader("x-api-key", token);
-  res.status(201).send({ status: true, token: token });
+  return res.status(201).send({ status: true, token: token });
+  }
+  catch (error) {
+    console.log("This is the error :", error.message)
+    return res.status(500).send({ msg: "Error", error: error.message })
+}
 };
 
 

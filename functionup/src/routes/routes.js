@@ -21,11 +21,11 @@ router.get("/blogs", mid.Authentication, blogController.getBlog)
 
 
 //                             Update blog  : API - 4
-router.put("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.blogIdValidation ,blogController.updateBlog)
+router.put("/blogs/:blogId",mid.Authentication,Vald.blogIdValidation,mid.Authorisation ,blogController.updateBlog)
 
 
 //                         Delete blog by blogId  : API - 5
-router.delete("/blogs/:blogId",mid.Authentication,mid.Authorisation,Vald.blogIdValidation, blogController.deleteBlog)
+router.delete("/blogs/:blogId",mid.Authentication,Vald.blogIdValidation,mid.Authorisation, blogController.deleteBlog)
 
 
 //                       Delete blog by query params  : API - 6
