@@ -10,7 +10,7 @@ const createIntern = async function (req, res) {
         return res.status(201).send({ status: true, data: internData })
 
     } catch (err) {
-        res.status(500).send({ status: false, msg: err.message })
+        res.status(500).send({ status: false, message: err.message })
     }
 }
 
