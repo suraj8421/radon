@@ -2,6 +2,8 @@ const CollegeModel = require("../models/collegeModel")
 const InternModel = require("../models/internModel")
 
 
+// ---=+=---------=+=----------=+=----------- [ Create College] ---=+=---------=+=----------=+=-----------//
+
 const createCollege = async function (req, res) {
     try {
         let data = req.body
@@ -16,34 +18,34 @@ const createCollege = async function (req, res) {
 }
 
 
-const getCollegeDetails = async function (req, res) {
+// ---=+=---------=+=----------=+=----------- [ Get College Detail] ---=+=---------=+=----------=+=-----------//
 
+let getCollegeDetails = async function (req, res) {
     try {
-        let data = req.query
+        collegeName = req.query.collegeName
 
-        if ((Object.keys(data).length === 0)) return res.status(400).send({ status: false, message: "College Details required in query" })
+        if (!collegeName) return res.status(400).send({ status: false, message: "Missing college name in query param" });
 
-        let collegeDetails = await CollegeModel.findOne(data).select({ name: 1, fullName: 1, logoLink: 1 })
+        let collegeData = await CollegeModel.findOne({ name: collegeName, isDeleted: false })
 
-        let interns = await InternModel.find({ collegeId: collegeDetails._id.toString() }).select({ name: 1, email: 1, mobile: 1 })
+        if (!collegeData) return res.status(404).send({ status: false, message: "College Not Found in DB" });
 
-        let name = collegeDetails.name
-        let fullName = collegeDetails.fullName
-        let logoLink = collegeDetails.logoLink
+        collegedId = collegeData._id.toString()
 
-        let collegeData = {
-            name: name,
-            fullName: fullName,
-            logoLink: logoLink,
-            interns: interns
-        }
+        let internData = await InternModel.find({ collegeId: collegedId, isDeleted: false }).select("name email mobile")
 
-        return res.status(201).send({ status: true, data: collegeData })
+        if (internData.length == 0) return res.status(200).send({ status: true, data: { "name": collegeData.name, "fullName": collegeData.fullName, "logoLink": collegeData.logoLink, "interns": "No intern Registered in this college" } });
 
-    } catch (err) {
-        res.status(500).send({ status: false, message: err.message })
+        return res.status(200).send({ status: true, data: { "name": collegeData.name, "fullName": collegeData.fullName, "logoLink": collegeData.logoLink, "interns": internData } });
+    }
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
+// ---=+=---------=+=----------=+=----------- [ Exports] ---=+=---------=+=----------=+=-----------//
+
 module.exports.createCollege = createCollege
 module.exports.getCollegeDetails = getCollegeDetails
+
+// ---=+=---------=+=----------=+=----------- ****************** ---=+=---------=+=----------=+=-----------//

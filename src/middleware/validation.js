@@ -1,24 +1,25 @@
-const mongoose = require('mongoose');
 const CollegeModel = require("../models/collegeModel")
 const InternModel = require("../models/internModel")
-
 const validator = require('validator')
+
+// ---=+=---------=+=----------=+=----------- [ Validation Functions ] ---=+=---------=+=----------=+=-----------//
 
 const isValidBody = function (body) {
     return Object.keys(body).length > 0
 }
 
 const isValidField = function (value) {
-    let regEx = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
-    return regEx.test(value)
+    let regEx = /^[a-zA-z.,@_&]+([\s][a-zA-Z.,@_&]+)*$/
+    return regEx.test(value.trim())
+}
+
+const url_valid = function (url) {
+    let regex = /^https?:\/\/.*\/.*\.(png|gif|webp|jpeg|jpg)\??.*$/gmi
+    return regex.test(url.trim())
 }
 
 
-
-const isValidObject = function (ObjectId) {
-    return mongoose.Types.ObjectId.isValid(ObjectId)
-}
-
+// ---=+=---------=+=----------=+=----------- [ College Validation ] ---=+=---------=+=----------=+=-----------//
 
 const collegeValidation = async function (req, res, next) {
     try {
@@ -29,24 +30,23 @@ const collegeValidation = async function (req, res, next) {
         if (!name) return res.status(400).send({ status: false, message: "College name is not present" })
 
         var regEx = /^[a-z]+$/;
-        if (!regEx.test(name)) {
-            return res.status(400).send({ status: false, message: "Name is invalid" });
-        }
+        if (!regEx.test(name.trim()))  return res.status(400).send({ status: false, message: "Name is Invalid" });
 
         let Name = await CollegeModel.findOne({ name })
 
-        if (Name) return res.status(400).send({ status: false, message: "College name is already used" })
-
+        if (Name) return res.status(400).send({ status: false, message: "College name is already registered" })
 
         if (!fullName) return res.status(400).send({ status: false, message: "College Fullname is not present" })
 
         if (!isValidField(fullName)) { return res.status(400).send({ status: false, message: "FullName is invalid" }); }
 
         let FullName = await CollegeModel.findOne({ fullName })
-        if (FullName) return res.status(400).send({ status: false, message: "College Fullname is already used" })
 
+        if (FullName) return res.status(400).send({ status: false, message: "College Fullname is already registered" })
 
         if (!logoLink) return res.status(400).send({ status: false, message: "LogoLink is Missing" })
+
+        if (!url_valid(logoLink)) return res.status(400).send({ status: false, message: "Invalid logo link" })
 
         if (isDeleted && (!(typeof (isDeleted) == "boolean"))) { return res.status(400).send({ status: false, message: "isDeleted Must be TRUE OR FALSE" }) }
 
@@ -58,44 +58,46 @@ const collegeValidation = async function (req, res, next) {
 }
 
 
+// ---=+=---------=+=----------=+=----------- [ Intern Validation ] ---=+=---------=+=----------=+=-----------//
+
 const internValidation = async function (req, res, next) {
     try {
         let data = req.body
-        let { name, email, mobile, collegeId } = data
+        let { name, email, mobile, collegeName } = data
+
         if (!isValidBody(data)) return res.status(400).send({ status: false, message: "Intern Details are required" })
 
-        if (!name) return res.status(400).send({ status: false, message: "Intern name is not present" })
+        if (!name) return res.status(400).send({ status: false, message: "Please provide Intern name" })
 
         if (!isValidField(name)) { return res.status(400).send({ status: false, message: "Name is invalid" }); }
 
         let Name = await InternModel.findOne({ name })
 
-        if (Name) return res.status(400).send({ status: false, message: "Intern name is already used" })
+        if (Name) return res.status(400).send({ status: false, message: "Intern name is already registered" })
 
-        if (!email) return res.status(400).send({ status: false, message: "Intern email is not present" })
+        if (!email) return res.status(400).send({ status: false, message: "Please provide Intern Email" })
 
-        if (!validator.isEmail(email)) return res.status(400).send({ status: false, message: "Intern email is invalid" })
+        if (!validator.isEmail(email.trim())) return res.status(400).send({ status: false, message: "Intern Email is invalid" })
 
         let Email = await InternModel.findOne({ email })
 
-        if (Email) return res.status(400).send({ status: false, message: "Intern email is already used" })
+        if (Email) return res.status(400).send({ status: false, message: "Intern Email is already registered" })
 
-        if (!mobile) return res.status(400).send({ status: false, message: "Intern's mobile no is required." })
+        if (!mobile) return res.status(400).send({ status: false, message: "Intern Mobile no. is required" })
 
         const mobileRegex = /^[6-9]\d{9}$/
 
-        if (!mobileRegex.test(mobile)) return res.status(400).send({ status: false, message: "Mobile no. should start from 6-9 and contain 10 digits " })
+        if (!mobileRegex.test(mobile.trim())) return res.status(400).send({ status: false, message: "Mobile no. should start from 6-9 and contain 10 digits" })
 
         let Mobile = await InternModel.findOne({ mobile })
 
-        if (Mobile) return res.status(400).send({ status: false, message: "Intern Mobile no. is already used" })
+        if (Mobile) return res.status(400).send({ status: false, message: "Intern Mobile no. is already registered" })
 
-        if (!collegeId) return res.status(400).send({ status: false, message: "College Id is not present" })
+        if (!collegeName) return res.status(400).send({ status: false, message: "Please provide College Name" })
 
-        if (!isValidObject(collegeId)) return res.status(400).send({ status: false, message: "Please provide Valid College Id" });
+        let findCollegeName = await CollegeModel.findOne({ name: data.collegeName.trim() })
 
-        let findCollegeID = await CollegeModel.findById(collegeId)
-        if (!findCollegeID) return res.status(404).send({ status: false, message: "Entered College Id is Not Present in DB" })
+        if (!findCollegeName) return res.status(404).send({ status: false, message: "Entered College Name is Not Present in DB" })
 
         next()
 
@@ -104,5 +106,9 @@ const internValidation = async function (req, res, next) {
     }
 }
 
+// ---=+=---------=+=----------=+=----------- [ Exports ] ---=+=---------=+=----------=+=-----------//
+
 module.exports.collegeValidation = collegeValidation
 module.exports.internValidation = internValidation
+
+// ---=+=---------=+=----------=+=----------- ****************** ---=+=---------=+=----------=+=-----------//

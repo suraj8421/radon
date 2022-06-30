@@ -1,4 +1,5 @@
-require("dotenv").config()
+// ---=+=---------=+=----------=+=----------- [ Import Modules ] ---=+=---------=+=----------=+=-----------//
+
 const express = require('express')
 const bodyparser = require('body-parser')
 const route = require('./routes/route.js')
@@ -7,6 +8,8 @@ const app = express()
 
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({extended: true}))
+
+// ---=+=---------=+=----------=+=----------- [ Connect MongoDB ] ---=+=---------=+=----------=+=-----------//
 
 mongoose.connect("mongodb+srv://Birappa:MangoDB@cluster0.m5phg.mongodb.net/group19Database?retryWrites=true&w=majority", {
     useNewUrlParser: true
@@ -17,7 +20,10 @@ mongoose.connect("mongodb+srv://Birappa:MangoDB@cluster0.m5phg.mongodb.net/group
 
 app.use('/', route)
 
+// ---=+=---------=+=----------=+=----------- [ Connect Port ] ---=+=---------=+=----------=+=-----------//
 
 app.listen(process.env.PORT || 3000, function () {
     console.log('Express app running on port ' + (process.env.PORT || 3000))
 });
+
+// ---=+=---------=+=----------=+=----------- ****************** ---=+=---------=+=----------=+=-----------//

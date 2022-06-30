@@ -1,11 +1,19 @@
 const InternModel = require("../models/internModel")
+const CollegeModel = require("../models/collegeModel")
 
+
+// ---=+=---------=+=----------=+=----------- [ Create Intern ] ---=+=---------=+=----------=+=-----------//
 
 const createIntern = async function (req, res) {
     try {
+
         let data = req.body
+
+        let collegeData = await CollegeModel.findOne({ name: data.collegeName.trim() })
         
-        let internData = await (await InternModel.create(data))
+        data.collegeId = collegeData._id.toString()
+
+        let internData = await InternModel.create(data)
 
         return res.status(201).send({ status: true, data: internData })
 
@@ -14,4 +22,8 @@ const createIntern = async function (req, res) {
     }
 }
 
-module.exports.createIntern = createIntern
+// ---=+=---------=+=----------=+=----------- [ Exports ] ---=+=---------=+=----------=+=-----------//
+
+module.exports.createIntern = createIntern 
+
+// ---=+=---------=+=----------=+=----------- ****************** ---=+=---------=+=----------=+=-----------//
