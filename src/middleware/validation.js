@@ -71,10 +71,6 @@ const internValidation = async function (req, res, next) {
 
         if (!isValidField(name)) { return res.status(400).send({ status: false, message: "Name is invalid" }); }
 
-        let Name = await InternModel.findOne({ name })
-
-        if (Name) return res.status(400).send({ status: false, message: "Intern name is already registered" })
-
         if (!email) return res.status(400).send({ status: false, message: "Please provide Intern Email" })
 
         if (!validator.isEmail(email.trim())) return res.status(400).send({ status: false, message: "Intern Email is invalid" })
