@@ -3,19 +3,52 @@ const userModel = require("../models/userModel")
 const ObjectId = require('mongoose').Types.ObjectId
 
 
+const isValid = function (x) {
+    if (typeof x === "undefined" || x === null) return false;
+    if (typeof x === "string" && x.trim().length === 0) return false;
+    return true;
+  };
+  const isValidBody = function (x) {
+    return Object.keys(x).length > 0;
+  };
+
+
 const createBook = async function(req, res) {
     try {
 
         let body = req.body
 
-        if (!ObjectId.isValid(body.userId)) {
-            return res.status(400).send({ status: false, msg: "Bad Request. AuthorId invalid" })
+        if (!isValidBody(body)) {
+            return res.status(400).send({ status: false, msg: "Invalid Request Parameter, Please Provide Another Details", });
         }
 
+        const { title, excerpt, ISBN, userId} = body
+
+
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, msg: "Title is Required" })
+        }
+        if (!isValid(excerpt)) {
+            return res.status(400).send({ status: false, msg: "Excerpt is Required" })
+        }
+        if (!isValid(ISBN)) {
+            return res.status(400).send({ status: false, msg: "Excerpt is Required" })
+        }
+
+        
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).send({ status: false, msg: "Bad Request. UserId invalid" })
+        }
+
+        let getUserData = await userModel.findById(userId)
+        if(!getUserData) return res.status(404).send({status: false, message: "Data not found"})
+        //console.log(getUserData)
+        //body.releasedAt = Date.now();
 
         let bookData = await bookModel.create(body)
         return res.status(201).send({ status: true, data: bookData })
     } catch (err) {
+        console.log(err)
         return res.status(500).send({ msg: "Server side Errors. Please try again later", error: err.message })
 
     }
@@ -33,13 +66,13 @@ const bookDetails = async function(req, res) {
         }
         const data = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, __v: 0 }).sort({ title: 1 })
         if (!data) return res.status(404).send({ status: false, msg: "No blog is found" })
-        res.status(200).send({
+        return res.status(200).send({
             status: true,
             message: "Book List",
             data: data
         })
     } catch (err) {
-        res.status(500).send({ status: false, Error: err.message })
+        return res.status(500).send({ status: false, Error: err.message })
     }
 }
 
