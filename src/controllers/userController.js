@@ -30,7 +30,7 @@ const loginUser = async function(req, res) {
         let token = jwt.sign({
                 userId: user._id.toString()
             },
-            "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "10min" }
+            "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "1min" }
 
         );
         res.setHeader("x-api-key", token);
