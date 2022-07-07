@@ -6,8 +6,11 @@ const { authentication } = require("../middleware/auth")
 
 router.post("/register", userController.createUser)
 router.post("/login", userController.loginUser)
+
+//////////////////////--> Using authentication form here////////////////////
+
 router.post("/books", authentication, bookController.createBook)
-router.get("/books", bookController.bookDetails)
+router.get("/books", authentication, bookController.bookDetails)
 
 
 
