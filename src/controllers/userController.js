@@ -25,7 +25,7 @@ const createUser = async function (req, res) {
         let data = req.body
 
         if (!isValidBody(data)) {
-            return res.status(400).send({ status: false, msg: "Invalid Request Parameter, Please Provide Another Details", });
+            return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details" });
         }
         const { title, name, phone, email, password, address } = data
 
@@ -57,7 +57,7 @@ const createUser = async function (req, res) {
         if (!isValid(password)) // --> name should be provided in the body
             return res.status(400).send({ status: false, message: "Please enter the user password. ⚠️" })
         if (!passwordRegex.test(password)) {
-            return res.status(400).send({ status: false, msg: "Your password must contain atleast one number,uppercase,lowercase and special character[ @ $ ! % * ? & # ] and length should be min of 8-15 charachaters" })
+            return res.status(400).send({ status: false, message: "Your password must contain atleast one number,uppercase,lowercase and special character[ @ $ ! % * ? & # ] and length should be min of 8-15 charachaters" })
         }
 
 
@@ -82,9 +82,9 @@ const createUser = async function (req, res) {
         let savedData = await userModel.create(data)
         return res.status(201).send({ status: true, message: 'Success', data: savedData })
 
-    } catch (err) {
+    } catch (error) {
 
-        return res.status(500).send({ status: false, message: err.message })
+        return res.status(500).send({ status: false, message: error.message })
 
     }
 }

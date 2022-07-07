@@ -10,6 +10,9 @@ router.post("/login", userController.loginUser)
 //////////////////////--> Using authentication form here////////////////////
 
 router.post("/books", authentication, bookController.createBook)
+
+//router.post("/books", bookController.createBook)
+
 router.get("/books", authentication, bookController.bookDetails)
 router.put("/books/:bookId", bookController.updateBook)
 

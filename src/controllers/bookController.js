@@ -4,12 +4,12 @@ const ObjectId = require('mongoose').Types.ObjectId
 const moment = require('moment')
 
 
-const isbnReGeX = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
+const isbnReGeX = /^[\d*\-]{10}|[\d*\-]{13}$/;
 
 
 const isValid = function (x) {
-    if (typeof x == "undefined" || x == null) return false;
-    if (typeof x == "string" && x.trim().length == 0) return false;
+    if (typeof x === "undefined" || x === null) return false;
+    if (typeof x === "string" && x.trim().length === 0) return false;
 
     return true;
 };
@@ -26,8 +26,9 @@ const createBook = async function (req, res) {
         if (!isValidBody(body)) {
             return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details" });
         }
+        const { title, excerpt, category, subcategory, ISBN, userId, releasedAt } = body
 
-        const { title, excerpt, category, subcategory, ISBN, userId } = body
+        //let isbn = ISBN.replace(/-/g, "")
 
 
         if (!isValid(title)) {
@@ -69,6 +70,7 @@ const createBook = async function (req, res) {
         if (!isbnReGeX.test(ISBN)) return res.status(400).send({ status: false, message: "Not a valid ISBN" })
 
 
+
         // checking vaild userId
         if (!ObjectId.isValid(userId)) {
             return res.status(400).send({ status: false, message: "Bad Request. UserId invalid" })
@@ -77,8 +79,6 @@ const createBook = async function (req, res) {
         if (!getUserData) return res.status(404).send({ status: false, message: "Data not found" })
 
 
-
-        // checking for unique title and ISBN
         let getBookDetails = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
 
         if (getBookDetails) {
@@ -90,21 +90,25 @@ const createBook = async function (req, res) {
         }
 
 
-        const validBlogData = { title, excerpt, category, ISBN, userId }
+
+        const validBlogData = { title, excerpt, category, ISBN, userId, releasedAt }
 
         if (subcategory) {
             if (Array.isArray(subcategory)) {
                 validBlogData['subcategory'] = [...subcategory]
             }
         }
+        if (validBlogData.ISBN) {
+            validBlogData.ISBN = validBlogData.ISBN.replace(/-/g, "")
+        }
 
 
         let bookData = await bookModel.create(validBlogData)
         return res.status(201).send({ status: true, data: bookData })
 
-    } catch (err) {
+    } catch (error) {
 
-        return res.status(500).send({ message: "Server side Errors. Please try again later", error: err.message })
+        return res.status(500).send({ message: "Server side Errors. Please try again later", error: error.message })
 
     }
 }
@@ -167,14 +171,13 @@ const updateBook = async function (req, res) {
             if (uniqueBookTitle) return res.status(400).send({ status: false, message: "You can not update with this book title as, this title is already present" })
         }
 
-
-
         //checking that ISBN key is having value or not
         if ("ISBN" in reqBody && !isValid(ISBN)) {
             return res.status(400).send({ status: false, message: "ISBN is Required, to update ISBN" })
         }
         //checking for unique book ISBN
         if (ISBN) {
+            ISBN = ISBN.replace(/-/g, "")
             uniqueBookisbn = await bookModel.findOne({ ISBN: ISBN }).select({ ISBN: 1 })
             if (uniqueBookisbn) return res.status(400).send({ status: false, message: "You can not update with this book ISBN as, this book ISBN is already present" })
         }
@@ -197,7 +200,6 @@ const updateBook = async function (req, res) {
 
 
 
-
         let updatedBookData = await bookModel.findOneAndUpdate(
             { _id: bookId, isDeleted: false },
             {
@@ -205,7 +207,7 @@ const updateBook = async function (req, res) {
                     title,
                     excerpt,
                     releasedAt,
-                    ISBN
+                    ISBN: ISBN.replace(/-/g, "")
                 }
             }, { new: true })
 
