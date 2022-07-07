@@ -38,7 +38,23 @@ const createBook = async function(req, res) {
         if (!isValid(subcategory)) {
             return res.status(400).send({ status: false, msg: "subcategory is Required" })
         }
+        if (!Body.releasedAt) {
+            return res
+                .status(400)
+                .send({ status: false, message: "Please provide releasedDate" });
+        }
 
+        //Date format("YYYY-MM-DD") validation
+        const dateRgx =
+            /^(18|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/.test(
+                body.releasedAt
+            );
+        if (!dateRgx) {
+            return res.status(400).send({
+                status: false,
+                message: "Please provide valid date in this formate YYYY-MM-DD",
+            });
+        }
 
 
 
