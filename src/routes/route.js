@@ -11,6 +11,9 @@ router.post("/login", userController.loginUser)
 
 router.post("/books", authentication, bookController.createBook)
 router.get("/books", authentication, bookController.bookDetails)
+router.put("/books/:bookId", bookController.updateBook)
+
+router.delete("/books/:bookId", authentication, bookController.deleteBookById)
 
 
 
