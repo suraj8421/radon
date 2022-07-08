@@ -1,24 +1,24 @@
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
-////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
 const nameRegex = /^[a-zA-Z\s]+$/
 const emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
 const validMobile = /^[1-9]\d{9}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/;
-const isValidTitle = function (x) {
+const isValidTitle = function(x) {
     return ["Mr", "Mrs", "Miss"].indexOf(x) !== -1;
 };
 
-const isValid = function (x) {
+const isValid = function(x) {
     if (typeof x === "undefined" || x === null) return false;
     if (typeof x === "string" && x.trim().length === 0) return false;
     return true;
 };
-const isValidBody = function (x) {
+const isValidBody = function(x) {
     return Object.keys(x).length > 0;
 };
 /////////////////////////////////////////////////////////
-const createUser = async function (req, res) {
+const createUser = async function(req, res) {
 
     try {
 
@@ -68,13 +68,13 @@ const createUser = async function (req, res) {
 
 
         // checking for unique email and phone
-        let getBookDetails = await bookModel.findOne({ $or: [{ email: email }, { phone: phone }] })
+        let getBookDetails = await userModel.findOne({ $or: [{ email: email }, { phone: phone }] })
         if (getBookDetails) {
 
-            if (getBookDetails.email == email) {
-                return res.status(400).send({ status: false, msg: `${email} email already registered ` })
+            if (getBookDetails.phone == phone) {
+                return res.status(400).send({ status: false, msg: `${phone} email already registered ` })
             } else {
-                return res.status(400).send({ status: false, msg: `${phone} phone number already registered` })
+                return res.status(400).send({ status: false, msg: `${email} phone number already registered` })
             }
         }
 
@@ -90,7 +90,7 @@ const createUser = async function (req, res) {
 }
 
 
-const loginUser = async function (req, res) {
+const loginUser = async function(req, res) {
 
     try {
         let body = req.body
@@ -101,8 +101,8 @@ const loginUser = async function (req, res) {
                 message: "Bad Request. username or the password is not correct",
             });
         let token = jwt.sign({
-            userId: user._id.toString()
-        },
+                userId: user._id.toString()
+            },
             "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "60min" }
 
         );
