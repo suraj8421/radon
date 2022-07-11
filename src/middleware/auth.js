@@ -6,7 +6,7 @@ const { now } = require("mongoose");
 const authentication = function (req, res, next) {
     try {
         const token = req.headers[`x-api-key`]
-        if (!token) return res.status(400).send({ status: false, msg: "Token must be present in Headers" });
+        if (!token) return res.status(401).send({ status: false, msg: "Token must be present in Headers" });
 
 
         let decodedToken=jwt.verify(token, "ASDFGH3456OKJNBDCFGHJ", (error, decodedToken) => {

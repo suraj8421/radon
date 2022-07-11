@@ -5,6 +5,8 @@ const nameRegex = /^[a-zA-Z\s]+$/
 const emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
 const validMobile = /^[1-9]\d{9}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/;
+const pinRegex= /^([0-9]){6}$/
+
 const isValidTitle = function(x) {
     return ["Mr", "Mrs", "Miss"].indexOf(x) !== -1;
 };
@@ -63,7 +65,12 @@ const createUser = async function(req, res) {
 
 
         //-->address validate
-        if ("address" in data && !isValid(address)) return res.status(400).send({ status: false, message: "Please enter user address" })
+        if ("address" in data && !isValid(address)) 
+        return res.status(400).send({ status: false, message: "Please enter user address" })
+
+        if (!pinRegex.test(address.pincode))
+        return res.status(400).send({ status: false, message: "Please provide a valid pincode. ⚠️" })
+
 
 
 

@@ -51,9 +51,6 @@ const createBook = async function(req, res) {
         if (!isValid(ISBN)) {
             return res.status(400).send({ status: false, message: "ISBN is Required" })
         }
-        // if (!isValid(subcategory)) {
-        //     return res.status(400).send({ status: false, message: "subcategory is Required" })
-        // }
 
         if (!isValid(releasedAt)) {
             return res.status(400).send({ status: false, message: "Please provide released date" });
@@ -83,7 +80,7 @@ const createBook = async function(req, res) {
         let getUserData = await userModel.findById(userId)
         if (!getUserData) return res.status(404).send({ status: false, message: "Data not found" })
 
-        if (getUserData._id.toString() !== TokenFromUser) return res.status(401).send({ status: false, message: "Unauthorized access ! user doesn't match" })
+        if (getUserData._id.toString() !== TokenFromUser) return res.status(403).send({ status: false, message: "Unauthorized access ! user doesn't match" })
 
         let getBookDetails = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
 
@@ -132,7 +129,7 @@ const bookDetails = async function(req, res) {
                 if (!validate) return res.status(404).send({ status: false, message: "UserId is not valid" });
             }
 
-            const data = await bookModel.find(filter).select({ ISBN: 0, subcategory: 0, __v: 0 }).sort({ title: 1 })
+            const data = await bookModel.find(filter).select({ ISBN: 0,isDeleted:0, subcategory: 0, __v: 0 }).sort({ title: 1 })
             if (!data) return res.status(404).send({ status: false, message: "No book is found" })
             return res.status(200).send({
                 status: true,
@@ -151,8 +148,10 @@ const getBookDetails = async function(req, res) {
             let _id = req.params.bookId
             let check = await bookModel.findOne({ $and: [{ _id }, { isDeleted: false }] }).select({ __v: 0 }).lean()
             if (!check) return res.status(404).send({ status: false, message: "Please enter valid id" })
+
             let review = await reviewModel.find({ $and: [{ bookId: _id }, { isDeleted: false }] }).select({ __v: 0, isDeleted: 0, createdAt: 0, updatedAt: 0 })
             check.reviewsData = review
+            
             res.status(200).send({ status: false, message: "Book List", data: check })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })

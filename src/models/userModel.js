@@ -32,6 +32,6 @@ const userSchema = new mongoose.Schema({
         city: { type: String },
         pincode: { type: String },
     }
-}, { timestamp: true });
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
