@@ -57,10 +57,17 @@ const createReview = async function (req, res) {
 
         //const getReview = await reviewModel.find({ bookId: bookId }).select({ createdAt: 0, updatedAt: 0, isDeleted: 0, __v: 0 })
 
-        updatedBook.reviewsData = { _id: createReview._id, bookId: createReview.bookId, reviewedBy: createReview.reviewedBy, reviewedAt: createReview.reviewedAt, rating: createReview.rating, review: createReview.review }
+        updatedBook.reviewsData = {
+            _id: createReview._id,
+            bookId: createReview.bookId,
+            reviewedBy: createReview.reviewedBy,
+            reviewedAt: createReview.reviewedAt,
+            rating: createReview.rating,
+            review: createReview.review
+        }
 
 
-        res.status(200).send({ status: true, message: "success", data: updatedBook })
+        res.status(201).send({ status: true, message: "success", data: updatedBook })
 
     } catch (error) {
 
@@ -112,7 +119,14 @@ const updateReview = async function (req, res) {
         // let result = bookData.toObject()
         // result.reviews = updateReview
 
-        bookData.reviewsData = { _id: updateReview._id, bookId: updateReview.bookId, reviewedBy: updateReview.reviewedBy, reviewedAt: updateReview.reviewedAt, rating: updateReview.rating, review: updateReview.review }
+        bookData.reviewsData = {
+            _id: updateReview._id,
+            bookId: updateReview.bookId,
+            reviewedBy: updateReview.reviewedBy,
+            reviewedAt: updateReview.reviewedAt,
+            rating: updateReview.rating,
+            review: updateReview.review
+        }
 
         return res.status(200).send({ status: true, message: "Review updated successfully ", data: bookData })
 
