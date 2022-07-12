@@ -114,6 +114,9 @@ const createBook = async function(req, res) {
 
     }
 }
+
+
+////////////----> GET /books
 const bookDetails = async function(req, res) {
         try {
             let query = req.query;
@@ -141,8 +144,12 @@ const bookDetails = async function(req, res) {
 
             return res.status(500).send({ status: false, Error: err.message })
         }
-    }
-    ///////////////////--->GET /books/:bookId
+}
+
+
+
+
+///////////////////--->GET /books/:bookId
 const getBookDetails = async function(req, res) {
         try {
             let _id = req.params.bookId
@@ -156,8 +163,11 @@ const getBookDetails = async function(req, res) {
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
         }
-    }
-    ///////-->PUT /books/:bookId////
+}
+
+
+
+///////-->PUT /books/:bookId////
 const updateBook = async function(req, res) {
 
     try {
@@ -245,6 +255,9 @@ const updateBook = async function(req, res) {
     }
 }
 
+
+
+/////////------->  DELETE /books/:bookId
 const deleteBookById = async function(req, res) {
     try {
         let enteredBookId = req.params.bookId

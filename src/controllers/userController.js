@@ -19,7 +19,12 @@ const isValid = function(x) {
 const isValidBody = function(x) {
     return Object.keys(x).length > 0;
 };
-/////////////////////////////////////////////////////////
+
+
+
+
+
+////////////------> POST /register
 const createUser = async function(req, res) {
 
     try {
@@ -97,6 +102,8 @@ const createUser = async function(req, res) {
 }
 
 
+
+//////// --------> POST /login
 const loginUser = async function(req, res) {
 
     try {
