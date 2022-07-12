@@ -69,7 +69,7 @@ const createBook = async function(req, res) {
         }
 
         //validation of ISBN
-        if (!isbnReGeX.test(ISBN)) return res.status(400).send({ status: false, message: "Not a valid ISBN" })
+        if (!isbnReGeX.test(ISBN)) return res.status(400).send({ status: false, message: "Not a valid ISBN. It can be 10 or 13 numeric characters." })
 
 
 
@@ -78,7 +78,7 @@ const createBook = async function(req, res) {
             return res.status(400).send({ status: false, message: "Bad Request. UserId invalid" })
         }
         let getUserData = await userModel.findById(userId)
-        if (!getUserData) return res.status(404).send({ status: false, message: "Data not found" })
+        if (!getUserData) return res.status(404).send({ status: false, message: "User not found" })
 
         if (getUserData._id.toString() !== TokenFromUser) return res.status(403).send({ status: false, message: "Unauthorized access ! user doesn't match" })
 
@@ -121,11 +121,17 @@ const bookDetails = async function(req, res) {
         try {
             let query = req.query;
             let { userId, category, subcategory } = query;
+
+            if ("userId" in query && !ObjectId.isValid(userId)) {
+                return res.status(400).send({ status: false, message: "Bad Request. UserId invalid" })
+            }
+
             let filter = { isDeleted: false };
 
             if (subcategory) filter.subcategory = { $all: subcategory.split(",") }
             if (category) filter.category = category;
             if (userId) filter.userId = userId;
+
 
             if (query.userId) {
                 const validate = await userModel.findById(query.userId);
@@ -153,6 +159,9 @@ const bookDetails = async function(req, res) {
 const getBookDetails = async function(req, res) {
         try {
             let _id = req.params.bookId
+            if (!ObjectId.isValid(_id)) return res.status(400).send({ status: false, message: "Not a valid Book ID" })
+
+
             let check = await bookModel.findOne({ $and: [{ _id }, { isDeleted: false }] }).select({ __v: 0 }).lean()
             if (!check) return res.status(404).send({ status: false, message: "Please enter valid id" })
 
@@ -174,6 +183,9 @@ const updateBook = async function(req, res) {
         let bookId = req.params.bookId
         let TokenFromUser = req.userId
 
+        // checking for valid bookId
+        if (!ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "Not a valid Book ID" })
+
         if (!TokenFromUser) return res.status(400).send({ status: false, message: "is not a valid token id" })
         let findBookId = await bookModel.findById({ _id: bookId })
         if (!findBookId) return res.status(400).send({ status: false, message: "invalid id" })
@@ -185,8 +197,6 @@ const updateBook = async function(req, res) {
 
         let { title, excerpt, releasedAt, ISBN } = reqBody;
 
-        // checking for valid bookId
-        if (!ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "Not a valid Book ID" })
 
 
 
@@ -218,8 +228,10 @@ const updateBook = async function(req, res) {
             if (uniqueBookisbn) return res.status(400).send({ status: false, message: "You can not update with this book ISBN as, this book ISBN is already present" })
         }
 
+        if("ISBN" in req.body) 
+        ISBN = ISBN.replace(/-/g, "")
         //validation of ISBN
-        if (!isbnReGeX.test(ISBN)) return res.status(400).send({ status: false, message: "Not a valid ISBN" })
+        if ("ISBN" in reqBody && !isbnReGeX.test(ISBN)) return res.status(400).send({ status: false, message: "Not a valid ISBN" })
 
 
 
@@ -242,7 +254,7 @@ const updateBook = async function(req, res) {
                 title,
                 excerpt,
                 releasedAt,
-                ISBN: ISBN.replace(/-/g, "")
+                ISBN
             }
         }, { new: true })
 
@@ -263,13 +275,13 @@ const deleteBookById = async function(req, res) {
         let enteredBookId = req.params.bookId
         let TokenFromUser = req.userId
 
+        if (!ObjectId.isValid(enteredBookId)) return res.status(400).send({ status: false, message: "Bad Request. BookId invalid" })
+
+
         if (!TokenFromUser) return res.status(400).send({ status: false, message: "is not a valid token id" })
         let findBookId = await bookModel.findById({ _id: enteredBookId })
         if (!findBookId) return res.status(400).send({ status: false, message: "invalid id" })
         if (findBookId.userId.toString() !== TokenFromUser) return res.status(401).send({ status: false, message: "Unauthorized access ! user doesn't match" })
-
-
-        if (!ObjectId.isValid(enteredBookId)) return res.status(400).send({ status: false, message: "Bad Request. BookId invalid" })
 
 
         let deleteDate = moment().format('YYYY-MM-DD h:mm:ss')

@@ -30,4 +30,9 @@ router.put("/books/:bookId/review/:reviewId", reviewController.updateReview)
 router.delete("/books/:bookId/review/:reviewId", reviewController.deletReview )
 
 
+router.all("/**", function (req, res) {
+    res.status(404).send({ status: false, message: "This URL is not valid" })
+})
+
+
 module.exports = router;

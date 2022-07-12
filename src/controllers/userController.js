@@ -50,7 +50,7 @@ const createUser = async function(req, res) {
         if (!isValid(phone)) // --> name should be provided in the body
             return res.status(400).send({ status: false, message: "Please enter the user mobile number. ⚠️" })
         if (!validMobile.test(phone)) // --> name should be provided in right format
-            return res.status(400).send({ status: false, message: "number should contain numeric only. ⚠️" })
+            return res.status(400).send({ status: false, message: "number should contain 10 digit numeric only. ⚠️" })
 
 
 
@@ -84,9 +84,9 @@ const createUser = async function(req, res) {
         if (getBookDetails) {
 
             if (getBookDetails.phone == phone) {
-                return res.status(400).send({ status: false, msg: `${phone} email already registered ` })
+                return res.status(400).send({ status: false, msg: `${phone} phone already registered ` })
             } else {
-                return res.status(400).send({ status: false, msg: `${email} phone number already registered` })
+                return res.status(400).send({ status: false, msg: `${email} email number already registered` })
             }
         }
 
@@ -117,7 +117,7 @@ const loginUser = async function(req, res) {
         let token = jwt.sign({
                 userId: user._id.toString()
             },
-            "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "60min" }
+            "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "1day" }
 
         );
         res.setHeader("x-api-key", token);

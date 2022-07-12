@@ -79,13 +79,26 @@ const updateReview = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details" });
         }
 
-
         if (!ObjectId.isValid(bookId)) {
             return res.status(400).send({ status: false, message: "Bad Request. BookId invalid" })
         }
         if (!ObjectId.isValid(reviewId)) {
             return res.status(400).send({ status: false, message: "Bad Request. Review invalid" })
         }
+
+
+        if ("reviewedBy" in data && !isValid(data.reviewedBy)) {
+            return res.status(400).send({ status: false, message: "reviewer name cannot be blank" })
+        }
+        if ("rating" in data && !isValid(data.rating)) {
+            return res.status(400).send({ status: false, message: "rating cannot be blank" })
+        }
+        if ("review" in data && !isValid(data.review)) {
+            return res.status(400).send({ status: false, message: "review cannot be blank" })
+        }
+
+
+
 
         let bookData = await bookModel.findOne({ _id: bookId, isDeleted: false }).lean()
         if (!bookData) return res.status(404).send({ status: false, message: "No data found" })
@@ -124,7 +137,7 @@ const deletReview = async function (req, res) {
             return res.status(400).send({ status: false, message: "Bad Request. BookId invalid" })
         }
         if (!ObjectId.isValid(reviewId)) {
-            return res.status(400).send({ status: false, message: "Bad Request. Review invalid" })
+            return res.status(400).send({ status: false, message: "Bad Request. ReviewId invalid" })
         }
 
 
