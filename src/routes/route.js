@@ -31,7 +31,7 @@ router.delete("/books/:bookId/review/:reviewId", reviewController.deletReview )
 
 
 router.all("/**", function (req, res) {
-    res.status(404).send({ status: false, message: "This URL is not valid" })
+    res.status(400).send({ status: false, message: "This URL is not valid" })
 })
 
 

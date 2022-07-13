@@ -1,22 +1,22 @@
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
-    ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 const nameRegex = /^[a-zA-Z\s]+$/
 const emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
 const validMobile = /^[1-9]\d{9}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/;
-const pinRegex= /^([0-9]){6}$/
+const pinRegex = /^([0-9]){6}$/
 
-const isValidTitle = function(x) {
+const isValidTitle = function (x) {
     return ["Mr", "Mrs", "Miss"].indexOf(x) !== -1;
 };
 
-const isValid = function(x) {
+const isValid = function (x) {
     if (typeof x === "undefined" || x === null) return false;
     if (typeof x === "string" && x.trim().length === 0) return false;
     return true;
 };
-const isValidBody = function(x) {
+const isValidBody = function (x) {
     return Object.keys(x).length > 0;
 };
 
@@ -25,7 +25,7 @@ const isValidBody = function(x) {
 
 
 ////////////------> POST /register
-const createUser = async function(req, res) {
+const createUser = async function (req, res) {
 
     try {
 
@@ -70,8 +70,8 @@ const createUser = async function(req, res) {
 
 
         //-->address validate
-        if ("address" in data && !isValid(address)) 
-        return res.status(400).send({ status: false, message: "Please enter user address" })
+        if ("address" in data && !isValid(address))
+            return res.status(400).send({ status: false, message: "Please enter user address" })
 
         if ("address" in data && !pinRegex.test(address.pincode))
         return res.status(400).send({ status: false, message: "Please provide a valid pincode. ⚠️" })
@@ -104,7 +104,7 @@ const createUser = async function(req, res) {
 
 
 //////// --------> POST /login
-const loginUser = async function(req, res) {
+const loginUser = async function (req, res) {
 
     try {
 
@@ -118,9 +118,11 @@ const loginUser = async function(req, res) {
                 message: "Bad Request. username or the password is not correct",
             });
         let token = jwt.sign({
-                userId: user._id.toString()
-            },
-            "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "1day" }
+            userId: user._id.toString(),
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 7600
+        },
+            "ASDFGH3456OKJNBDCFGHJ"
 
         );
         res.setHeader("x-api-key", token);
