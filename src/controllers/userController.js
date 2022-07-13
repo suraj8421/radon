@@ -73,7 +73,7 @@ const createUser = async function(req, res) {
         if ("address" in data && !isValid(address)) 
         return res.status(400).send({ status: false, message: "Please enter user address" })
 
-        if (!pinRegex.test(address.pincode))
+        if ("address" in data && !pinRegex.test(address.pincode))
         return res.status(400).send({ status: false, message: "Please provide a valid pincode. ⚠️" })
 
 
@@ -107,8 +107,11 @@ const createUser = async function(req, res) {
 const loginUser = async function(req, res) {
 
     try {
-        let body = req.body
-        let user = await userModel.findOne(body);
+
+        let email = req.body.email
+        let password = req.body.password
+        let user = await userModel.findOne({ email: email, password: password })
+
         if (!user)
             return res.status(400).send({
                 status: false,
