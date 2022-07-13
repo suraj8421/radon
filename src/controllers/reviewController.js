@@ -81,6 +81,7 @@ const updateReview = async function (req, res) {
         let bookId = req.params.bookId
         let reviewId = req.params.reviewId
         let data = req.body
+        let {reviewedBy, review, rating} = data
 
         if (!isValidBody(data)) {
             return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details" });
@@ -94,13 +95,13 @@ const updateReview = async function (req, res) {
         }
 
 
-        if ("reviewedBy" in data && !isValid(data.reviewedBy)) {
+        if ("reviewedBy" in data && !isValid(reviewedBy)) {
             return res.status(400).send({ status: false, message: "reviewer name cannot be blank" })
         }
-        if ("rating" in data && !isValid(data.rating)) {
+        if ("rating" in data && !isValid(rating)) {
             return res.status(400).send({ status: false, message: "rating cannot be blank" })
         }
-        if ("review" in data && !isValid(data.review)) {
+        if ("review" in data && !isValid(review)) {
             return res.status(400).send({ status: false, message: "review cannot be blank" })
         }
 
@@ -111,8 +112,8 @@ const updateReview = async function (req, res) {
         if (!bookData) return res.status(404).send({ status: false, message: "No data found" })
 
 
-
-        let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: data }, { new: true })
+        let val = { reviewedBy, review, rating }
+        let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: val }, { new: true })
         if (!updateReview) return res.status(404).send({ status: false, message: "No data found" })
 
 

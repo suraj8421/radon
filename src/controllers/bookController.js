@@ -31,9 +31,9 @@ const createBook = async function(req, res) {
         if (!isValidBody(body)) {
             return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details" });
         }
-        const { title, excerpt, category, subcategory, ISBN, userId, releasedAt } = body
+        let { title, excerpt, category, subcategory, ISBN, userId, releasedAt } = body
 
-        //let isbn = ISBN.replace(/-/g, "")
+        ISBN = ISBN.replace(/-/g, "")
 
 
         if (!isValid(title)) {
@@ -58,9 +58,13 @@ const createBook = async function(req, res) {
 
         //Date format("YYYY-MM-DD") validation
         const dateRgx =
-            /^(18|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/.test(
+            /^(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/.test(
                 body.releasedAt
             );
+        // const dateRgx =
+        //     /^(00|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/.test(
+        //         body.releasedAt
+        //     );
         if (!dateRgx) {
             return res.status(400).send({
                 status: false,
@@ -82,6 +86,8 @@ const createBook = async function(req, res) {
 
         if (getUserData._id.toString() !== TokenFromUser) return res.status(403).send({ status: false, message: "Unauthorized access ! user doesn't match" })
 
+        
+        // ISBN = ISBN.replace(/-/g, "")
         let getBookDetails = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
 
         if (getBookDetails) {
@@ -139,7 +145,7 @@ const bookDetails = async function(req, res) {
             }
 
             const data = await bookModel.find(filter).select({ ISBN: 0,isDeleted:0, subcategory: 0, __v: 0 }).sort({ title: 1 })
-            if (!data) return res.status(404).send({ status: false, message: "No book is found" })
+            if (data.length == 0) return res.status(404).send({ status: false, message: "No book is found" })
             return res.status(200).send({
                 status: true,
                 message: "Book List",
