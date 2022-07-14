@@ -1,8 +1,10 @@
 const bookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 const reviewModel = require("../models/reviewModel")
+const {uploadFile} = require("../middleware/fileUpload")
 const ObjectId = require('mongoose').Types.ObjectId
 const moment = require('moment')
+
 
 
 // const isbnReGeX = /^[\d*\-]{10}|[\d*\-]{13}$/;
@@ -23,6 +25,23 @@ const isValidBody = function(x) {
 
 const createBook = async function(req, res) {
     try {
+
+    
+            let files = req.files
+            if (files && files.length > 0) {
+                //upload to s3 and get the uploaded link
+                // res.send the link back to frontend/postman
+                var uploadedFileURL = await uploadFile(files[0])
+                // console.log(uploadedFileURL)
+                // res.status(201).send({ msg: "file uploaded succesfully", data: uploadedFileURL })
+            }
+            else {
+                res.status(400).send({ msg: "No file found" })
+            }
+
+            
+
+
         let TokenFromUser = req.userId
         if (!TokenFromUser) return res.status(400).send({ status: false, message: "is not a valid token id" })
 
@@ -98,18 +117,23 @@ const createBook = async function(req, res) {
             }
         }
 
-        const validBlogData = { title, excerpt, category, ISBN, userId, releasedAt }
+
+        let bookCover = uploadedFileURL
+        const validBlogData = { title, excerpt, category, ISBN, userId, releasedAt, bookCover}
 
         if (subcategory) {
             if (Array.isArray(subcategory)) {
                 validBlogData['subcategory'] = [...subcategory]
+            }else{
+            subcategory = subcategory.trim().split(",").map(sbCat => sbCat.trim())
+            validBlogData['subcategory'] = subcategory
             }
         }
+
 
         if (validBlogData.ISBN) {
             validBlogData.ISBN = validBlogData.ISBN.replace(/-/g, "")
         }
-
 
         let bookData = await bookModel.create(validBlogData)
         return res.status(201).send({ status: true, data: bookData })

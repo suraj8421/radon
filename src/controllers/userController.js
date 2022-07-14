@@ -125,6 +125,16 @@ const loginUser = async function (req, res) {
             "ASDFGH3456OKJNBDCFGHJ"
 
         );
+
+        // let token = jwt.sign({
+        //     userId: user._id.toString()
+        // },
+        //     "ASDFGH3456OKJNBDCFGHJ", { expiresIn: "60min" }
+
+        // );
+
+
+
         res.setHeader("x-api-key", token);
         return res.status(200).send({ status: true, message: "Login Successful", token: token });
     } catch (err) {

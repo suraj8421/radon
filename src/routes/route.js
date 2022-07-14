@@ -4,6 +4,9 @@ const bookController = require("../controllers/bookController")
 const userController = require("../controllers/userController")
 const reviewController = require("../controllers/reviewController")
 const { authentication } = require("../middleware/auth")
+const { testAWS } = require("../middleware/fileUpload")
+// router.post("/test", testAWS)
+
 
 router.post("/register", userController.createUser)
 router.post("/login", userController.loginUser)
