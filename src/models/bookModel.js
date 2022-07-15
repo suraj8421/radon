@@ -48,7 +48,7 @@ const bookSchema = new mongoose.Schema({
     },
     releasedAt: {
         type: Date,
-        required: [true, 'Category is required']
+        required: [true, 'date is required']
     }
 }, { timestamps: true });
 module.exports = mongoose.model("Book", bookSchema);

@@ -74,8 +74,9 @@ const createBook = async function(req, res) {
         if (!isValid(releasedAt)) {
             return res.status(400).send({ status: false, message: "Please provide released date" });
         }
+        console.log(releasedAt)
 
-        //Date format("YYYY-MM-DD") validation
+        //Date format("YYYY-MrM-DD") validation
         const dateRgx =
             /^(00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/.test(
                 body.releasedAt
