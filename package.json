@@ -1,0 +1,29 @@
+{
+  "name": "scalable-url-shortner-project-requirement",
+  "version": "1.0.0",
+  "description": "FORTH PROJECT----------------------------RADON",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Subhamsidharth/Scalable-URL-Shortner-Project-Requirement.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Subhamsidharth/Scalable-URL-Shortner-Project-Requirement/issues"
+  },
+  "homepage": "https://github.com/Subhamsidharth/Scalable-URL-Shortner-Project-Requirement#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "mongoose": "^6.4.4",
+    "shortid": "^2.2.16",
+    "url": "^0.11.0",
+    "valid": "^0.1.1",
+    "valid-url": "^1.0.9"
+  }
+}
