@@ -19,14 +19,14 @@ module.exports.createUrl = async function (req, res) {
         if (!isValid(longUrl))
             return res.status(400).send({ status: false, message: "Long Url is required. ⚠️" });
 
-        if (!validUrl.isUri(longUrl)) {
+        if (!validUrl.isWebUri(longUrl)) { //isweburi
             return res.status(400).send({ status: false, message: "Please enter valid LongUrl. ⚠️" });
             }
        
     
         let uniqueUrl=await urlModel.findOne({longUrl}).select({_id:0,__v:0,createdAt:0,updatedAt:0})
         if (uniqueUrl){
-            return res.status(200).send({status:true,data:uniqueUrl})
+            return res.status(200).send({status:true,message:"This is already created ⚠️",data:uniqueUrl})
         }
         const urlCode = shortid.generate().toLowerCase()
         const shortUrl = "http://localhost:3000/" + urlCode
@@ -39,12 +39,11 @@ module.exports.createUrl = async function (req, res) {
             shortUrl: shortUrl,
             urlCode: urlCode
         }
-        console.log(Data)
     
         let urlCreated = await urlModel.create(Data) //.select({_id:0,_v:0,createdAt:0,updatedAt:0})
         return res
             .status(201)
-            .send({ status: true, message: "Success", data: urlCreated });
+            .send({ status: true, message: "Success", data: Data});
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
@@ -54,36 +53,7 @@ module.exports.createUrl = async function (req, res) {
 
 //********************************getApi ***********************************************************************
 
-// module.exports.redirectUrl= async function (req,res){
-//     try {
-//         const urlCode=req.params.urlCode
-//         let demo= await GET_ASYNC(urlCode)
-//         let useNewUrlParser=JSON.parse(demo)
-//         if (!useNewUrlParser){
-//             const findUrl=await urlModel.findOne({urlCode:urlCode})
-//             if (!findUrl){
-//                 return res.status (404).send ({status:false, message:"No Url found"}) 
-//             }
-//         }
-       
-       
-//         // const findLongUrl =findUrl.longUrl
-//         // if (findUrl){
-//         //     return res.status(302).redirect(findLongUrl)
-            
-//         // }else{
-//         //     return res.status (404).send ({status:false, message:"No Url found"})
-//         // } 
 
-        
-//         await SET_ASYNC(`${urlCode}`,JSON.stringify (findurl.longUrl))
-//         return res.status(302).redirect(useNewUrlParser)
-            
-//     } catch (error) {
-//         console.log(error)
-//         return res.status(500).send({ status: false, message: error.message, errorName:error.errorname });
-//     }
-// }
 
 module.exports.redirectUrl = async function (req, res) {
     try {
