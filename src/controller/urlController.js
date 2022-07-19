@@ -7,6 +7,7 @@ const shortid = require("shortid")
 const isValid = function (value) {
     if (typeof value === "undefined" || value === null) return false;
     if (typeof value === "string" && value.trim().length === 0) return false;
+    if (typeof value === 'number' ) return false;
     return true;
 };
 
@@ -14,7 +15,7 @@ module.exports.createUrl = async function (req, res) {
     try {
         let data = req.body
         if (!Object.keys(data).length)
-            return res.status(400).send({ status: false, message: "Bad Request, Please enter the details in the request body." });
+            return res.status(400).send({ status: false, message: "Bad Request, Please enter the details in the request body. ❗" });
         const longUrl = data.longUrl
         if (!isValid(longUrl))
             return res.status(400).send({ status: false, message: "Long Url is required. ⚠️" });
@@ -26,7 +27,7 @@ module.exports.createUrl = async function (req, res) {
     
         let uniqueUrl=await urlModel.findOne({longUrl}).select({_id:0,__v:0,createdAt:0,updatedAt:0})
         if (uniqueUrl){
-            return res.status(200).send({status:true,message:"This is already created ⚠️",data:uniqueUrl})
+            return res.status(200).send({status:true,message:"This is already created ♻✅",data:uniqueUrl})
         }
         const urlCode = shortid.generate().toLowerCase()
         const shortUrl = "http://localhost:3000/" + urlCode
@@ -43,7 +44,7 @@ module.exports.createUrl = async function (req, res) {
         let urlCreated = await urlModel.create(Data) //.select({_id:0,_v:0,createdAt:0,updatedAt:0})
         return res
             .status(201)
-            .send({ status: true, message: "Success", data: Data});
+            .send({ status: true, message: "Success ✔🟢", data: Data});
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
@@ -61,7 +62,7 @@ module.exports.redirectUrl = async function (req, res) {
   
       const findUrlCode = await urlModel.findOne(urlCode).select({ createdAt: 0, updatedAt: 0, __v: 0, _id: 0 })
   
-      if(!findUrlCode) return res.status(400).send({status: false, message: "url code not matched"})
+      if(!findUrlCode) return res.status(400).send({status: false, message: "url code not matched ❗🚫"})
 
       return res.status(302).redirect(findUrlCode.longUrl)
   
