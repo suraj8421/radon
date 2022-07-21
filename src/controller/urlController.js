@@ -58,7 +58,7 @@ module.exports.createUrl = async function (req, res) {
 
         let uniqueUrl = await urlModel.findOne({ longUrl }).select({ _id: 0, __v: 0, createdAt: 0, updatedAt: 0 })
         if (uniqueUrl) {
-            await SET_ASYNC(`${req.body.longUrl}`, JSON.stringify(uniqueUrl), "EX", 20);//---------------------------
+            await SET_ASYNC(`${req.body.longUrl}`, JSON.stringify(uniqueUrl), "EX", 60*2);//---------------------------
             return res.status(200).send({ status: true, message: "This is already created ♻✅", data: uniqueUrl })
         }
         const urlCode = shortid.generate().toLowerCase()
