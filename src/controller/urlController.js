@@ -8,10 +8,10 @@ const { promisify } = require("util");
 //Connect to redis
 const redisClient = redis.createClient(
     16606,  //port
-    "redis-16606.c212.ap-south-1-1.ec2.cloud.redislabs.com", //host
+    "redis-16606.c212.ap-south-1-1.ec2.cloud.redislabs.com", //host 
     { no_ready_check: true }
 );
-redisClient.auth("fe9u0KwiUsxNoHQXetJVocl7goThvLPG", function (err) { //pw
+redisClient.auth("fe9u0KwiUsxNoHQXetJVocl7goThvLPG", function (err) { //pw 
     if (err) throw err;
 });
 
@@ -83,21 +83,20 @@ module.exports.createUrl = async function (req, res) {
     }
 }
 
-//********************************getApi ***********************************************************************
+//********************************getApi ***********************************************************************//
 
 
 
 module.exports.redirectUrl = async function (req, res) {
     try {
-        let urlCode = req.params;
+        let urlCode = req.params.urlCode;
         let urlcache = await GET_ASYNC(`${urlCode}`);
         if (urlcache) {
-            return res.status(302).redirect(JSON.parse(urlcache));
+            return res.status(302).redirect(urlcache);
         }
-
-        const findUrlCode = await urlModel.findOne(urlCode).select({ createdAt: 0, updatedAt: 0, __v: 0, _id: 0 })
-         if (!findUrlCode) return res.status(400).send({ status: false, message: "url code not matched ❗🚫" })
-        await SET_ASYNC(`${urlCode}`, JSON.stringify(findUrlCode.longUrl));
+        const findUrlCode = await urlModel.findOne({urlCode}).select({ createdAt: 0, updatedAt: 0, __v: 0, _id: 0 })
+           if (!findUrlCode) return res.status(404).send({ status: false, message: "url code not Found ❗🚫" })
+        await SET_ASYNC(`${urlCode}`, findUrlCode.longUrl);
         return res.status(302).redirect(findUrlCode.longUrl)
 
     } catch (error) {
@@ -105,4 +104,4 @@ module.exports.redirectUrl = async function (req, res) {
         return res.status(500).send({ status: false, error: error.message });
     }
 };
-// module.exports = (createUrl)
+// module.exports = {createUrl,redirectUrl}
