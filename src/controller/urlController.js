@@ -37,7 +37,7 @@ const isValid = function (value) {
     return true;
 };
 
-module.exports.createUrl = async function (req, res) {
+const createUrl = async function (req, res) {
     try {
         let data = req.body
         if (!Object.keys(data).length)
@@ -91,7 +91,7 @@ module.exports.createUrl = async function (req, res) {
 
 
 
-module.exports.redirectUrl = async function (req, res) {
+ const redirectUrl = async function (req, res) {
     try {
         let urlCode = req.params.urlCode;
         let urlcache = await GET_ASYNC(`${urlCode}`);
@@ -108,4 +108,4 @@ module.exports.redirectUrl = async function (req, res) {
         return res.status(500).send({ status: false, error: error.message });
     }
 };
-// module.exports = {createUrl,redirectUrl}
+ module.exports = {createUrl,redirectUrl}
