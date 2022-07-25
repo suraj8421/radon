@@ -161,10 +161,13 @@ const getProfile = async function (req, res) {
     try {
 
         let user = req.params.userId
+        let TokenFromUser = req.userId
         let profile = await userModel.findOne({ _id: user })
-        if (!profile) {
-            return res.status(404).send({ status: false, message: "User not found" })
-        }
+        if (!profile) return res.status(404).send({ status: false, message: "User not found" })
+        if(!TokenFromUser) return res.status(404).send({ status: false, message:"is not a valid user" })
+        if (profile._id.toString() !== TokenFromUser) return res.status(401).send({ status: false, message: "Unauthorized access ! user doesn't match" })
+
+        
         res.status(200).send({ status: true, message: "User profile details", data: profile })
     } catch (error) {
         return res.status(404).send({ status: false, message: "server side errors", error: error.message })
