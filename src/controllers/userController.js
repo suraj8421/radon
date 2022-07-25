@@ -1,6 +1,7 @@
 const userModel = require("../models/userModel")
 const bcrypt = require('bcrypt');
 const {uploadFile}= require('../aws/fileUpload')
+const jwt = require("jsonwebtoken");
 const { isValid,isValidBody, nameRegex, emailRegex,validMobile,passwordRegex,pinRegex}=require('../middleware/valid')
 
 const createUser = async function (req, res) {
@@ -83,19 +84,19 @@ const userLogin = async (req, res) => {
 
         if (!isValid(email)) return res.status(400).send({ status: false, message: "please enter your email address" })
 
-        if (!email.trim().match(emailRegex))
-            return res.status(400).send({ status: false, message: "Please enter valid email" })
+        // if (!email.trim().match(emailRegex))
+        //     return res.status(400).send({ status: false, message: "Please enter valid email" })
 
         if (!isValid(password)) return res.status(400).send({ status: false, message: "please enter your password" })
 
         // const isEmailExists = await userModel.findOne({ email: email })
         // if (!isEmailExists) return res.status(401).send({ status: false, message: "Email is Incorrect" })
 
-        if (!passwordRegex(password))
-            return res.status(400).send({
-                status: false,
-                message: "Please provide a valid password ,Password should be of 8 - 15 characters",
-            })
+        // if (!passwordRegex(password))
+        //     return res.status(400).send({
+        //         status: false,
+        //         message: "Please provide a valid password ,Password should be of 8 - 15 characters",
+        //     })
 
         // const isPasswordMatch = await bcrypt.compare(password, isEmailExists.password)
        
@@ -117,7 +118,10 @@ const userLogin = async (req, res) => {
         }
         );
         res.setHeader("Authorization", token);
-        return res.status(200).send({ status: true, message: "User login successfull", data: { token } });
+        return res.status(200).send({
+            status: true, message: "User login successfull", data: {
+                    userId: user._id,
+                    token: token}} );
     }
 
          catch (error) {
