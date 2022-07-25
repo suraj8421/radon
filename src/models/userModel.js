@@ -2,28 +2,28 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
 
-    fname: { type: String,  require: true},
+    fname: { type: String,  required: true,trim: true,},
 
-    lname: { type: String, require: true },
+    lname: { type: String, required: true,trim: true, },
 
-    email: { type: String, require: true, unique: true },
+    email: { type: String, required: true, unique: true,trim: true, },
 
-    profileImage: { type: String, require: true }, // s3 link
+    profileImage: { type: String, required: true }, // s3 link
 
-    phone: { type: String, require: true, unique: true},
+    phone: { type: String, required: true, unique: true,trim: true,},
 
-    password: { type: String, require: true}, // encrypted password
+    password: { type: String, required: true,trim: true,}, // encrypted password
 
     address: {
         shipping: {
-            street: { type: String, require: true },
-            city: { type: String, require: true },
-            pincode: { type: Number, require: true }
+            street: { type: String, required: true,trim: true, },
+            city: { type: String, required: true,trim: true, },
+            pincode: { type: Number, required: true,trim: true, }
         },
         billing: {
-            street: { type: String, require: true },
-            city: { type: String, require: true },
-            pincode: { type: Number, require: true }
+            street: { type: String, required: true,trim: true, },
+            city: { type: String, required: true,trim: true, },
+            pincode: { type: Number, required: true,trim: true, }
         }
     }
 
