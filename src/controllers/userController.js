@@ -9,7 +9,10 @@ const createUser = async function (req, res) {
 
         let body= req.body
 
-        let {fname, lname, email, phone, password, address } = body
+        let {fname, lname, email, phone, password} = body
+
+        // console.log(body.address);
+        console.log(body['address.billing.city']);
 
         if(!isValidBody(body)) return res.status(400).send({status: false, message: "Body cannot be blank"})
 
@@ -21,11 +24,11 @@ const createUser = async function (req, res) {
 
         if (!isValid(phone)) return res.status(400).send({ status: false, message: "Phone Number" })
 
-        if (!isValidBody(address)) return res.status(400).send({ status: false, message: "Address cannot be blank" })
+        // if (!isValidBody(body.address)) return res.status(400).send({ status: false, message: "Address cannot be blank" })
 
-        if (!isValidBody(address.shipping)) return res.status(400).send({ status: false, message: "Shipping Address cannot be blank" })
+        // if (!isValidBody(body.address.shipping)) return res.status(400).send({ status: false, message: "Shipping Address cannot be blank" })
 
-        if (!isValidBody(address.billing)) return res.status(400).send({ status: false, message: "Billing Address cannot be blank" })
+        // if (!isValidBody(body.address.billing)) return res.status(400).send({ status: false, message: "Billing Address cannot be blank" })
 
         if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "Shipping Street is required" })
 
@@ -38,6 +41,23 @@ const createUser = async function (req, res) {
         if (!isValid(address.billing.city)) return res.status(400).send({ status: false, message: "Billing City is required" })
 
         if (!isValid(address.billing.pincode)) return res.status(400).send({ status: false, message: "Billing pincode is required" })
+
+
+        if (!nameRegex.test(fname)) return res.status(400).send({ status: false, message: "first name reqire only letters only" })
+        if (!nameRegex.test(lname)) return res.status(400).send({ status: false, message: "last name reqire only letters only" })
+        if (!emailRegex.test(email)) return res.status(400).send({ status: false, message: "email is not valid" })
+        if (!validMobile.test(phone)) return res.status(400).send({ status: false, message: " invalid Phone Number" })
+        if (!passwordRegex.test(password)) return res.status(400).send({ status: false, message: " invalid password" })
+
+        let userDetails = await userModel.findOne({ $or: [{ phone: phone }, { email: email }] })
+
+        if (userDetails) {
+            if (userDetails.phone == phone) {
+                return res.status(400).send({ status: false, message: `${phone} phone number already exist` })
+            } else {
+                return res.status(400).send({ status: false, message: `${email} email already exist` })
+            }
+        }
 
 
         
@@ -84,22 +104,7 @@ const userLogin = async (req, res) => {
 
         if (!isValid(email)) return res.status(400).send({ status: false, message: "please enter your email address" })
 
-        // if (!email.trim().match(emailRegex))
-        //     return res.status(400).send({ status: false, message: "Please enter valid email" })
-
         if (!isValid(password)) return res.status(400).send({ status: false, message: "please enter your password" })
-
-        // const isEmailExists = await userModel.findOne({ email: email })
-        // if (!isEmailExists) return res.status(401).send({ status: false, message: "Email is Incorrect" })
-
-        // if (!passwordRegex(password))
-        //     return res.status(400).send({
-        //         status: false,
-        //         message: "Please provide a valid password ,Password should be of 8 - 15 characters",
-        //     })
-
-        // const isPasswordMatch = await bcrypt.compare(password, isEmailExists.password)
-       
 
         let user = await userModel.findOne({ email: email})
 
