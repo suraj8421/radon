@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 
-//////////////////////////////////////authentication///////////////////////////////////////
 
+
+////////////////////////////*Authentication*//////////////////////////////////////////////////////////////////
 const authentication = function (req, res, next) {
     try {
-        const token = req.headers[`Authorization`]
+        let token=req.headers[`Authorization`];
+        if(!token) token=req.headers[`authorization`];       
         if (!token) return res.status(401).send({ status: false, msg: "Token must be present in Headers" });
 
 
