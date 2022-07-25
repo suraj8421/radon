@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const {createUser} = require("../controllers/userController")
+const { createUser, userLogin, getProfile } = require("../controllers/userController")
 
 
 router.post("/register", createUser)
-// router.get("/:urlCode", getUrl)
+router.post("/login", userLogin)
+router.get("/user/:userId/profile", getProfile)
+
 
 
 router.all("/*", function (req, res) {
