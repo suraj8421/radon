@@ -169,36 +169,24 @@ const userLogin = async (req, res) => {
 ////////////////////////////*Get User Profile*//////////////////////////////////////////////////////////////////
 const getProfile = async function (req, res) {
     try {
-
         let user = req.params.userId
-
         //check if userid is a valid objectid
         if ((!ObjectId.isValid(user))) {
             return res.status(400).send({ status: false, msg: "Bad Request. UserId invalid" })
         }
-
-        let TokenFromUser = req.userId
         let profile = await userModel.findOne({ _id: user })
-        if (!profile) return res.status(404).send({ status: false, message: "User not found" })
-        if(!TokenFromUser) return res.status(404).send({ status: false, message:"is not a valid user" })
-        if (profile._id.toString() !== TokenFromUser) return res.status(401).send({ status: false, message: "Unauthorized access ! user doesn't match" })
-
-        
+        if (!profile) return res.status(404).send({ status: false, message: "User not found" })        
         return res.status(200).send({ status: true, message: "User profile details", data: profile })
     } catch (error) {
         return res.status(404).send({ status: false, message: "server side errors", error: error.message })
     }
 }
-
-
-////////////////////////////////////////Update User //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+////////////////////////////////////////*Update User * //////////////////////////////////////////////////////////////////////////////
 const updateUserProfile = async function (req, res) {
   try {
     let body = req.body
     let user = req.params.userId
-
+    
     if (!isValidBody(body)) return res.status(400).send({ status: false, message: "Body is empty to udate " })
 
     let { fname, lname, email, phone } = body
@@ -248,7 +236,7 @@ const updateUserProfile = async function (req, res) {
 
     if (userDetails) {
       if (userDetails.email == email) {
-        return res.status(400).send({ status: false, message: `${email} email number already exist` })
+        return res.status(400).send({ status: false, message: `${email} email  already exist` })
       } else {
         return res.status(400).send({ status: false, message: `${phone} phone already exist` })
       }
@@ -257,7 +245,7 @@ const updateUserProfile = async function (req, res) {
 
 
 
-    // let password;
+     let password;
     if (body.password) {
       if (!isValid(body.password)) return res.status(400).send({ status: false, message: "Enter a valid password" })
       if (!passwordRegex.test(body.password)) return res.status(400).send({ status: false, message: "password should contain in 8 - 15 characters/special/numbers" })
@@ -317,7 +305,7 @@ const updateUserProfile = async function (req, res) {
     }
  
 
-    let update = await userModel.findOneAndUpdate({ _id: user }, result, { new: true })
+    let update = await userModel.findOneAndUpdate({ _id:user }, result, { new: true })
 
     return res.status(200).send({ status: true, message: " User profile Updated successfully", data: update })
 
