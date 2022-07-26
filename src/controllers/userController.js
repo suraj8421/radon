@@ -14,16 +14,16 @@ const createUser = async function (req, res) {
         if(!isValidBody(body)) return res.status(400).send({status: false, message: "Body cannot be blank"})
         //fname validation and fname regex
         if (!isValid(fname)) return res.status(400).send({ status: false, message: "First Name is required" })
-        if (!nameRegex.test(fname)) return res.status(400).send({ status: false, message: "First Name is required" })
+        if (!nameRegex.test(fname)) return res.status(400).send({ status: false, message: "First Name should be albhabets" })
         //lname validation and lname regex
         if (!isValid(lname)) return res.status(400).send({ status: false, message: "Last Name is required" })
-        if (!nameRegex.test(lname)) return res.status(400).send({ status: false, message: "Last Name is required" })
+      if (!nameRegex.test(lname)) return res.status(400).send({ status: false, message: "Last Name should be albhabets" })
         //email valid and eamil regex
-        if (!isValid(email)) return res.status(400).send({ status: false, message: "valid email is required" })
+        if (!isValid(email)) return res.status(400).send({ status: false, message: "email is required" })
         if (!emailRegex.test(email)) return res.status(400).send({ status: false, message: "valid email is required" })
         //phone vallid and phone regex
-        if (!isValid(phone)) return res.status(400).send({ status: false, message: "Phone Number invalid" })
-        if (!validMobile.test(phone)) return res.status(400).send({ status: false, message: "Phone Number invalid" })
+        if (!isValid(phone)) return res.status(400).send({ status: false, message: "Phone Number required" })
+        if (!validMobile.test(phone)) return res.status(400).send({ status: false, message: "Phone Number invalid. should be 10 digit" })
 
 
         //password vallid and password regex
@@ -38,9 +38,12 @@ const createUser = async function (req, res) {
             address = parsedAddress;
             body.address = address
 
-            if (!isValid(address.shipping)) {return res.status(400).send({ status: false, message: "Shipping address is required" })
-            }
         }       
+
+        if (!isValid(address.shipping)) {
+            return res.status(400).send({ status: false, message: "Shipping address is required" })
+        }
+
         if (!isValid(address.shipping.street)) {
             {
               return res.status(400).send({ status: false, message: "Please provide shipping street" });
@@ -135,17 +138,12 @@ const userLogin = async (req, res) => {
 
         if (!isValid(password)) return res.status(400).send({ status: false, message: "please enter your password" })
 
-        const isEmailExists = await userModel.findOne({ email: email })
-        if (!isEmailExists) return res.status(401).send({ status: false, message: "Email is Incorrect" })
-
         if (!passwordRegex.test(password))
             return res.status(400).send({
                 status: false,
                 message: "Please provide a valid password ,Password should be of 8 - 15 characters",
             })
 
-        // const isPasswordMatch = await bcrypt.compare(password, isEmailExists.password)
-       
 
         let user = await userModel.findOne({ email: email})
 
@@ -193,9 +191,12 @@ const getProfile = async function (req, res) {
         if (profile._id.toString() !== TokenFromUser) return res.status(401).send({ status: false, message: "Unauthorized access ! user doesn't match" })
 
         
-        res.status(200).send({ status: true, message: "User profile details", data: profile })
+        return res.status(200).send({ status: true, message: "User profile details", data: profile })
     } catch (error) {
         return res.status(404).send({ status: false, message: "server side errors", error: error.message })
     }
 }
+
+
+
 module.exports = { createUser, userLogin, getProfile }
