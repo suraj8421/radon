@@ -94,7 +94,7 @@ const createUser = async function (req, res) {
 
         if (userDetails) {
           if (userDetails.email == email) {
-              return res.status(400).send({ status: false, message: `${email} email number already exist` })
+              return res.status(400).send({ status: false, message: `${email} email already exist` })
             } else {
               return res.status(400).send({ status: false, message: `${phone} phone already exist` })
             }
@@ -105,10 +105,11 @@ const createUser = async function (req, res) {
         const hashPassword = bcrypt.hashSync(password, 10);
         body["password"] = hashPassword
         //file upload   
+      let uploadedFileURL
         let files = req.files
         if (files && files.length > 0) {
 
-            var uploadedFileURL = await uploadFile(files[0])
+            uploadedFileURL = await uploadFile(files[0])
         }
         else {
             res.status(400).send({ msg: "No file found" })
@@ -194,7 +195,6 @@ const updateUserProfile = async function (req, res) {
     let files = req.files
     let profileImage;
     if (files && files.length > 0) {
-
       var uploadedFileURL = await uploadFile(files[0])
       profileImage = uploadedFileURL
     }
@@ -314,6 +314,7 @@ const updateUserProfile = async function (req, res) {
     return res.status(500).send({ status: false, message: "server side errors", error: err.message })
   }
 }
+
 
 
 

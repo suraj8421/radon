@@ -22,6 +22,9 @@ const validMobile = /^[1-9]\d{9}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/;
 
 const pinRegex = /^([0-9]){6}$/
+
+const priceRegex = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/
+
 module.exports ={
     isValid,
     isValidBody,
@@ -29,5 +32,6 @@ module.exports ={
     emailRegex,
     validMobile,
     passwordRegex,
-    pinRegex
+    pinRegex,
+    priceRegex
 }
