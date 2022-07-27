@@ -226,7 +226,7 @@ const updateUserProfile = async function (req, res) {
     if (email) {
       if (!isValid(email)) return res.status(400).send({ status: false, message: "Enter a valid email id" })
       if (!emailRegex.test(email)) return res.status(400).send({ status: false, message: "Enter email in correct format" })
-      if (email) unique.push({ email: email })
+      unique.push({ email: email })
 
 
       // let isEmailexist = await userModel.findOne({ email: email })
@@ -236,7 +236,7 @@ const updateUserProfile = async function (req, res) {
     if (phone) {
       if (!isValid(phone)) return res.status(400).send({ status: false, message: "Enter a valid phone number" })
       if (!validMobile.test(phone)) return res.status(400).send({ status: false, message: "Enter Indian valid phone number   " })
-      if (phone) unique.push({ phone: phone })
+      unique.push({ phone: phone })
 
 
       // let isPhoneexist = await userModel.findOne({ phone: phone })
