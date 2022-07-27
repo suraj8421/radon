@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
     isFreeShipping: { type: Boolean, default: false },
     productImage: { type: String, require: true },  // s3 link
     style: { type: String },
-    availableSizes: {type: [String]},
+    availableSizes: {required:true, type: [String]},
     installments: { type: Number },
     deletedAt: { type: Date },
     isDeleted: { type: Boolean, default: false }

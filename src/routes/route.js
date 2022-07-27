@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { createUser, userLogin, getProfile, updateUserProfile } = require("../controllers/userController")
 const {authentication,autherization}= require('../middleware/auth')
-const { createProduct } = require("../controllers/productController")
+const { createProduct, getProduct, getproductDetails, deleteProduct } = require("../controllers/productController")
 
 //////////////////*FEATURE 1 - User  ApI's*////////////////////////////////
 router.post("/register", createUser)
@@ -13,6 +13,13 @@ router.put("/user/:userId/profile",authentication,autherization, updateUserProfi
 
 //////////////////*FEATURE 2 - Product ApI's*///////////////////////////////
 router.post("/products", createProduct)
+router.get("/products", getProduct)
+router.get("/products/:productId", getproductDetails)
+
+router.delete("/products/:productId", deleteProduct)
+
+
+
 
 
 

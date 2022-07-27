@@ -188,9 +188,11 @@ const updateUserProfile = async function (req, res) {
     let body = req.body
     let user = req.params.userId
     
-    if (!isValidBody(body)) return res.status(400).send({ status: false, message: "Body is empty to udate " })
+    if (!isValidBody(body)) return res.status(400).send({ status: false, message: "Body is empty to update " })
+    // if (!isValidBody(body) && !req.files) return res.status(400).send({ status: false, message: "Body is empty to update " })
 
-    let { fname, lname, email, phone } = body
+
+    let { fname, lname, email, phone, password } = body
 
     let files = req.files
     let profileImage;
@@ -199,36 +201,29 @@ const updateUserProfile = async function (req, res) {
       profileImage = uploadedFileURL
     }
 
-    if (fname) {
+    
+    if ("fname" in body) {
       if (!isValid(fname)) return res.status(400).send({ status: false, message: "Enter a valid fname" })
       if (!nameRegex.test(fname)) return res.status(400).send({ status: false, message: "Enter fname in alphabetical format" })
     }
 
-    if (lname) {
+    if ("lname" in body) {
       if (!isValid(lname)) return res.status(400).send({ status: false, message: "Enter a valid lname" })
       if (!nameRegex.test(lname)) return res.status(400).send({ status: false, message: "Enter lname in alphabetical format" })
     }
 
 
     let unique= []
-    if (email) {
+    if ("email" in body) {
       if (!isValid(email)) return res.status(400).send({ status: false, message: "Enter a valid email id" })
       if (!emailRegex.test(email)) return res.status(400).send({ status: false, message: "Enter email in correct format" })
       unique.push({ email: email })
-
-
-      // let isEmailexist = await userModel.findOne({ email: email })
-      // if (isEmailexist) return res.status(400).send({ status: false, message: "email is already in use" })
     }
 
-    if (phone) {
+    if ("phone" in body) {
       if (!isValid(phone)) return res.status(400).send({ status: false, message: "Enter a valid phone number" })
       if (!validMobile.test(phone)) return res.status(400).send({ status: false, message: "Enter Indian valid phone number   " })
       unique.push({ phone: phone })
-
-
-      // let isPhoneexist = await userModel.findOne({ phone: phone })
-      // if (isPhoneexist) return res.status(400).send({ status: false, message: "phone is already in use" })
     }
 
     if(unique.length>0){
@@ -243,15 +238,12 @@ const updateUserProfile = async function (req, res) {
     }
   }
 
-
-
-     let password;
-    if (body.password) {
+    if ("password" in body) {
       if (!isValid(body.password)) return res.status(400).send({ status: false, message: "Enter a valid password" })
       if (!passwordRegex.test(body.password)) return res.status(400).send({ status: false, message: "password should contain in 8 - 15 characters/special/numbers" })
       password = await bcrypt.hash(body.password, 10)
     }
-    if (body.address) {
+    if ("address" in body) {
       const address = JSON.parse(body.address);
       body.address = address;
       // console.log(body.address);
