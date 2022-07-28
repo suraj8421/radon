@@ -72,19 +72,10 @@ const createProduct = async function (req, res) {
 
         /////////////////////////// available size validation //////////////////////////
         if (!availableSizes) return res.status(400).send({ status: false, message: "Available sizes mandatory" })
-            // availableSizes = availableSizes.trim()
-            // if (availableSizes[0] === "[" && availableSizes[availableSizes.length-1] === "]"){
-            // availableSizes = JSON.parse(availableSizes);
-            //     if (Array.isArray(availableSizes)) {
-            //         validProductData['availableSizes'] = [...availableSizes]
-            //      }else{
-            //         return res.status(400).send({ status: false, message: "enter proper format in availableSize column as ['S', 'XL']" })
-            //      }
-            //  } else {
+    
                 availableSizes = availableSizes.trim().split(",").map(sbCat => sbCat.trim().toUpperCase())
                 body['availableSizes'] = availableSizes
-        //     }
-        
+             
         for(let i=0; i<availableSizes.length; i++){
             if (!isValidSize(availableSizes[i])) return res.status(400).send({ status: false, message: "Product sizes should only be 'S', 'XS', 'M', 'X', 'L', 'XXL' or 'XL'" })
         }
@@ -122,9 +113,9 @@ const getProduct = async function (req, res) {
                     status: false,
                     message: "Enter a value for product name ",
                 })
-            // filter.title = {}
-            // filter.title["$regex"] = data.name
-            // filter.title["$options"] = "i"
+            filter.title = {}
+            filter.title["$regex"] = data.name
+            filter.title["$options"] = "i"
             // console.log(filter);
         }
         
@@ -190,10 +181,7 @@ const getProduct = async function (req, res) {
             }
 
             filter.price = {}
-            // if (data.priceGreaterThan && data.priceLessThan) {
-            //     filter.price["$gt"] = data.priceGreaterThan
-            //     filter.price["$lt"] = data.priceLessThan
-            // } else {
+         
                 if (data.priceGreaterThan) filter.price["$gt"] = data.priceGreaterThan
                 if (data.priceLessThan) filter.price["$lt"] = data.priceLessThan
             // }
@@ -206,7 +194,6 @@ const getProduct = async function (req, res) {
             if (!sortedprice.match(/^(1|-1)$/))
                 return res.status(400).send({ status: false, message: "priceSort must be 1 or -1" })
         }
-        // if(data.name) filter.title = data.name
         console.log(filter);
         
         const getProduct = await productModel.find(filter).sort({ price: sortedprice }) //collation is use to make sorting case incasesentive
@@ -276,15 +263,9 @@ const updateProduct=async function(req,res){
          if ((!ObjectId.isValid(productId))) {
             return res.status(400).send({ status: false, message: "Bad Request. ProductId invalid" })
         }
-        // let findProduct = await productModel.findOne({ _id: productId,isDeleted:false})
-        // if(!findProduct) return res.status(400).send({status:false,message:"product not found"})
-        
+ 
         let { title, description, price, isFreeShipping, style, availableSizes, installments } = body
-        // if(title){
-        //     let Title=await productModel.findOne({title:title})
-        //     if(Title) return res.status(400).send({ status: false, message:`${title} is already exists`})
-        //     if (!isValid(title)) return res.status(400).send({ status: false, message: "Title is required" })
-        //         }        
+          
         if("description" in body){
          if (!isValid(description)) return res.status(400).send({ status: false, message: "Description should be given" })
         }
@@ -299,20 +280,19 @@ const updateProduct=async function(req,res){
         let files = req.files
         if (files && files.length > 0)  
         uploadedFileURL = await uploadFile(files[0])
-        // body.productImage = uploadedFileURL
 
         if("style" in body){
             if (!isValid(style)) return res.status(400).send({ status: false, message: "style should be valid" })
         }
         if("availableSizes" in body){
             if (!isValid(availableSizes)) return res.status(400).send({ status: false, message: "available sizes should be valid" })
-            // if (!availableSizes) return res.status(400).send({ status: false, message: "Available sizes mandatory" })
+
             availableSizes = availableSizes.toUpperCase().trim().split(",").map(sbCat => sbCat.trim())
-            // body['availableSizes'] = availableSizes
             for(let i=0; i<availableSizes.length; i++){
                 if (!isValidSize(availableSizes[i])) return res.status(400).send({ status: false, message: "Product sizes should only be 'S', 'XS', 'M', 'X', 'L', 'XXL' or 'XL'" })
             }
         }
+
         if("installments" in body){
         if (!priceRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
         }
@@ -322,12 +302,11 @@ const updateProduct=async function(req,res){
             let Title = await productModel.findOne({ title: title })
             if (Title) return res.status(400).send({ status: false, message: `${title} title is already exists` })
         } 
-        console.log(body)
        
         const dataToUpdate = { title, description, price, isFreeShipping, style, installments, uploadedFileURL }
 
-        // let product = await productModel.findByIdAndUpdate(productId, { $addToSet: { availableSizes: availableSizes }, title: body.title, description: body.description, price: body.price, isFreeShipping: body.isFreeShipping, style: body.style, availableSizes: body.style, installments: body.installments }, { new: true })
         let findProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { $set: dataToUpdate , $addToSet:{ availableSizes: availableSizes }}, { new: true })
+
         if(!findProduct) return res.status(400).send({status:false,message:"product not found"})
 
 
