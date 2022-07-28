@@ -64,7 +64,7 @@ const createProduct = async function (req, res) {
         if (isFreeShipping !== "true" && isFreeShipping !=="false") return res.status(400).send({ status: false, message: "isFreeShipping should have only true or false" })
 
         ///////////////////////////////style validation ////////////////////////////////////////////////////////
-        if(style){
+        if("style" in body){
             if (!isValid(style)) return res.status(400).send({ status: false, message: "style should be valid" })
         }
 
@@ -79,7 +79,7 @@ const createProduct = async function (req, res) {
             //         return res.status(400).send({ status: false, message: "enter proper format in availableSize column as ['S', 'XL']" })
             //      }
             //  } else {
-                availableSizes = availableSizes.trim().split(",").map(sbCat => sbCat.trim())
+                availableSizes = availableSizes.trim().split(",").map(sbCat => sbCat.trim().toUpperCase())
                 body['availableSizes'] = availableSizes
         //     }
         
@@ -98,7 +98,7 @@ const createProduct = async function (req, res) {
 
         ////////////////////////////// Creating new product /////////////////////////////////////////////////
         let productData = await productModel.create(body)
-        return res.send({ status: true, message: "User created successfully", productData })
+        return res.send({ status: true, message: "User created successfully", data: productData })
     } catch (error) {
         console.log(error);
         return res.status(500).send({ message: "Server side Errors. Please try again later", error: error.message })
@@ -114,18 +114,15 @@ const getProduct = async function (req, res) {
 
         let filter = { isDeleted: false }
 
-        if (data.name || data.name === "") {
+        if (data.name) {
             if (!isValid(data.name))
                 return res.status(400).send({
                     status: false,
                     message: "Enter a value for product name ",
                 })
-
-
-
         }
 
-        if (data.size || data.size === "") {
+        if (data.size) {
             if (!isValid(data.size))
                 return res.status(400).send({
                     status: false,
@@ -154,6 +151,7 @@ const getProduct = async function (req, res) {
             
             filter.availableSizes = {}
             filter.availableSizes["$in"] = filteredsize
+            console.log(filter);
         }
     }
 
@@ -233,10 +231,11 @@ const getproductDetails = async function (req, res) {
         return res.status(200).send({ status: true, message: "Success", data: product })
     }
     catch (error) {
-        console.log("This is the Error", error.message)
         res.status(500).send({ message: "Error", error: error.message })
     }
 }
+
+
 
 const deleteProduct = async function (req, res) {
     try {
