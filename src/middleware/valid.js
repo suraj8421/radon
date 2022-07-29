@@ -16,13 +16,15 @@ const nameRegex = /^[a-zA-Z\s]+$/
 
 const emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
 
-const validMobile = /^[1-9]\d{9}$/;
+const validMobile = /^[6-9]\d{9}$/;
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/;
 
 const pinRegex = /^([0-9]){6}$/
 
 const priceRegex = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/
+
+const installmentRegex = /^[0-9]*$/
 
 module.exports ={
     isValid,
@@ -32,5 +34,6 @@ module.exports ={
     validMobile,
     passwordRegex,
     pinRegex,
-    priceRegex
+    priceRegex,
+    installmentRegex
 }

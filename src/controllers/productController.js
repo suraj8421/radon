@@ -1,7 +1,7 @@
 const productModel = require('../models/productModel')
 const { uploadFile } = require('../aws/fileUpload')
 const ObjectId = require('mongoose').Types.ObjectId
-const { isValid, isValidBody, nameRegex, emailRegex, validMobile, passwordRegex, pinRegex, priceRegex } = require('../middleware/valid')
+const { isValid, isValidBody, installmentRegex, priceRegex } = require('../middleware/valid')
 
 
 const isValidSize = function (x) {
@@ -82,7 +82,7 @@ const createProduct = async function (req, res) {
     
 
         /////////////////////////////installment validation////////////////////////////////////////////////////
-        if (!priceRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
+        if (!installmentRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
 
 
         //////////////////////checking unique title///////////////////////////////////////////////////////
@@ -143,13 +143,14 @@ const getProduct = async function (req, res) {
                     if (!enumSize.includes(filteredsize[i])) {
                         return res.status(400).send({
                             status: false,
-                            message: `Sizes should be ${enumSize} value (with multiple value please give saperated by comma)`,
+                            message: `Sizes should be ${enumSize} value (with multiple value please give saperated by comma)`
                         })
                     }
                 }
             
             filter.availableSizes = {}        
             filter.availableSizes["$in"] = filteredsize
+            // console.log(filter);
         }
     }
 
