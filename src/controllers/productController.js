@@ -21,22 +21,22 @@ const createProduct = async function (req, res) {
         let body = req.body
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = body
 
-        ///////////////////////////*body validation*////////////////////////////////////////////////
+        ////////////////////////////////////*body validation*////////////////////////////////////////////////
         if (!isValidBody(body))  return res.status(400).send({ status: false, message: "Body cannot be empty" })
 
-        ////////////////////////// title validation ////////////////////////////////////////
+        ////////////////////////////////// title validation ////////////////////////////////////////
         if (!isValid(title)) return res.status(400).send({ status: false, message: "Title is required" })
         // if (!nameRegex.test(title)) return res.status(400).send({ status: false, message: "Title should only be albhabets" })
         
 
-        /////////////////////////// description validation ////////////////////////////////////
+        ////////////////////////////////// description validation ////////////////////////////////////
         if (!isValid(description)) return res.status(400).send({ status: false, message: "Description should be given" })
 
-        /////////////////////////// price validation //////////////////////////////////////////
+        ///////////////////////////////////// price validation //////////////////////////////////////////
         if (!priceRegex.test(price)) return res.status(400).send({ status: false, message: "Enter a valid price amount" })
 
 
-        ////////////////////////// upload product image in aws and getting the link///////////////////////////
+        //////////////////////////// upload product image in aws and getting the link///////////////////////////
         let uploadedFileURL
         let files = req.files
         if (files && files.length > 0)  uploadedFileURL = await uploadFile(files[0])
@@ -45,7 +45,7 @@ const createProduct = async function (req, res) {
         body["productImage"] = uploadedFileURL
 
 
-        ////////////////////////////// Currency id validation ///////////////////////
+        //////////////////////////////////////// Currency id validation ////////////////////////////////////////////
         if(!currencyId) {
             body.currencyId = "INR"
         }else{
@@ -54,7 +54,7 @@ const createProduct = async function (req, res) {
         }
         
 
-        ////////////////////////////// Currency format validation///////////////////////
+        //////////////////////////////////////// Currency format validation ////////////////////////////////////////
         if(!currencyFormat){
             body.currencyFormat = "₹"
         }else{
@@ -62,15 +62,15 @@ const createProduct = async function (req, res) {
         if (!isValidCurrencyFormat(currencyFormat)) return res.status(400).send({ status: false, message: "Please enter a valid currency format as ₹" })
         }
 
-        ///////////////////////////////isFreeShipping///////////////////////////////////////////////////////
+        /////////////////////////////////////////// isFreeShipping ///////////////////////////////////////////////////////
         if (isFreeShipping !== "true" && isFreeShipping !=="false") return res.status(400).send({ status: false, message: "isFreeShipping should have only true or false" })
 
-        ///////////////////////////////style validation ////////////////////////////////////////////////////////
+        ////////////////////////////////////////// style validation ////////////////////////////////////////////////////////
         if("style" in body){
             if (!isValid(style)) return res.status(400).send({ status: false, message: "style should be valid" })
         }
 
-        /////////////////////////// available size validation //////////////////////////
+        /////////////////////////////////////// available size validation /////////////////////////////////////////
         if (!availableSizes) return res.status(400).send({ status: false, message: "Available sizes mandatory" })
     
                 availableSizes = availableSizes.trim().split(",").map(sbCat => sbCat.trim().toUpperCase())
@@ -81,15 +81,15 @@ const createProduct = async function (req, res) {
         }
     
 
-        /////////////////////////////installment validation////////////////////////////////////////////////////
+        //////////////////////////////////////// installment validation ///////////////////////////////////////////////
         if (!installmentRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
 
 
-        //////////////////////checking unique title///////////////////////////////////////////////////////
+        ////////////////////////////////// checking unique title ///////////////////////////////////////////////////////
         let uniqueTitle = await productModel.findOne({ title: title })
         if (uniqueTitle) return res.status(400).send({ status: false, message: `${title} title already exist` })
 
-        ////////////////////////////// Creating new product /////////////////////////////////////////////////
+        //////////////////////////////////////// Creating new product /////////////////////////////////////////////////
         let productData = await productModel.create(body)
         return res.send({ status: true, message: "Product created successfully", productData })
     } catch (error) {
@@ -150,7 +150,6 @@ const getProduct = async function (req, res) {
             
             filter.availableSizes = {}        
             filter.availableSizes["$in"] = filteredsize
-            // console.log(filter);
         }
     }
 
@@ -195,7 +194,7 @@ const getProduct = async function (req, res) {
             if (!sortedprice.match(/^(1|-1)$/))
                 return res.status(400).send({ status: false, message: "priceSort must be 1 or -1" })
         }
-        console.log(filter);
+        // console.log(filter);
         
         const getProduct = await productModel.find(filter).sort({ price: sortedprice }) //collation is use to make sorting case incasesentive
 
@@ -313,7 +312,7 @@ const updateProduct=async function(req,res){
 
         return res.status(200).send({ status: true, message: "Updated successfully", data: findProduct })
     }catch(err){
-        console.log(err)
+        // console.log(err)
         return res.status(500).send({ status: false, message:err.message})
     }
 }
