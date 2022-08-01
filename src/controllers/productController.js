@@ -294,7 +294,7 @@ const updateProduct=async function(req,res){
         }
 
         if("installments" in body){
-        if (!priceRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
+            if (!installmentRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
         }
 
         if ("title" in body) {
