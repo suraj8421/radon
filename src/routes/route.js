@@ -23,10 +23,10 @@ router.delete("/products/:productId", deleteProduct)
 
 ////////////////////*FEATURE 3 - Cart ApI,s*/////////////////////////////////
 
-router.post("/users/:userId/cart", createCart)
-router.put("/users/:userId/cart", updateCart)
-router.get("/users/:userId/cart", getCart)
-router.delete("/users/:userId/cart", deleteCart)
+router.post("/users/:userId/cart", authentication, autherization, createCart )
+router.put("/users/:userId/cart", authentication, autherization, updateCart)
+router.get("/users/:userId/cart", authentication, autherization, getCart)
+router.delete("/users/:userId/cart", authentication, autherization, deleteCart)
 
 
 
