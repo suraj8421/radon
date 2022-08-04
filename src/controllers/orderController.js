@@ -17,9 +17,9 @@ const createOrder = async function (req, res) {
 
         let cart = await cartModel.findOne({ _id: cartId })
 
-        if (!cart) return res.status(400).send({ status: false, message: "cart not exist" })
+        if (!cart) return res.status(404).send({ status: false, message: "cart not exist" })
         if (cart.items.length === 0) return res.status(400).send({ status: false, message: "Cart is empty. Please add product before ordering" })
-        if (user != cart.userId) { return res.status(400).send({ status: false, message: "user not found" }) }
+        // if (user != cart.userId) { return res.status(400).send({ status: false, message: "user not found" }) }
         if ("cancellable" in body) {
             if (!["true", "false", true, false].includes(cancellable)) return res.status(400).send({ status: false, message: "cancellable should be only true or false" })
         }
@@ -43,7 +43,8 @@ const createOrder = async function (req, res) {
 
         await cartModel.findOneAndUpdate({ userId: user },{ items: [], totalItems: 0, totalPrice: 0 })
 
-        return res.status(200).send({ status: true, message: "order created successfully", data: create })
+        let respondData = { _id: create._id, userId: create.userId, items: create.items, totalPrice: create.totalPrice, totalItems: create.totalItems, totalQuantity: create.totalQuantity, cancellable: create.cancellable, status: create.status, createdAt: create.createdAt, updatedAt: create.updatedAt }
+        return res.status(201).send({ status: true, message: "order created successfully", data: respondData })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -78,6 +79,7 @@ const updateOrder = async function (req, res) {
             isDeleted: false
         })
 
+        if (findOrder.status == "cancelled") return res.status(400).send({ status: false, message: "Order alreay cancelled" })
         if (!findOrder)
             return res.status(404).send({
                 status: false,
@@ -86,14 +88,15 @@ const updateOrder = async function (req, res) {
 
         if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "You cannot cancel this order" })
 
-        let orderUpdate = await orderModel.findOneAndUpdate({ _id: findOrder._id }, { status: "cancelled", isDeleted: true, deletedAt: Date.now() }, { new: true })
-        res.status(200).send({
+        let orderUpdate = await orderModel.findOneAndUpdate({ _id: findOrder._id }, { status: "cancelled" }, { new: true }).select({ isDeleted: 0, __v: 0 })
+        return res.status(200).send({
             status: true,
             message: "Success",
             data: orderUpdate
         })
 
     } catch (err) {
+        console.log(err);
         return res.status(500).send({ status: false, message: err.message })
     }
 }
