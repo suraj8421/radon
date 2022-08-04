@@ -62,7 +62,7 @@ const createCart = async function (req, res) {
             let cartData = await cartModel.create(newProductData)
           
             let respondData = { _id: cartData._id, userId: cartData.userId, items: [{ productId: productSearch, quantity: cartData.items[0].quantity }], totalPrice: cartData.totalPrice, totalItems: cartData.totalItems, createdAt: cartData.createdAt, updatedAt: cartData.updatedAt }
-            return res.send({ status: true, message: "Cart created successfully", data: respondData })
+            return res.status(201).send({ status: true, message: "Cart created successfully", data: respondData })
         }
     } catch (error) {
         console.log(error);
@@ -76,10 +76,12 @@ const updateCart = async function (req, res) {
         let body = req.body;
         let userId = req.params.userId
 
-        const { cartId, productId, removeProduct } = body
+        let { cartId, productId, removeProduct } = body
+        removeProduct = Number(removeProduct)
         if (!isValidBody(body)) return res.status(400).send({ status: false, message: "Body should not be empty" })
         let findUser = await userModel.findById({ _id: userId })
         if (!findUser) return res.status(400).send({ status: false, message: "User not found" })
+        
         if (!ObjectId.isValid(cartId)) return res.status(400).send({ status: false, message: "card Id is invalid" })
         const findCart = await cartModel.findOne({ _id: cartId })
         if (!findCart) return res.status(400).send({ status: false, message: "Cart id not exist" })
@@ -106,7 +108,6 @@ const updateCart = async function (req, res) {
         } return res.status(404).send({ status: false, message: "prodeuct not found" })
 
     } catch (err) {
-        console.log(err);
         return res.status(500).send({ status: false, message: "There is an error inside of the code" })
     }
 }
