@@ -57,6 +57,7 @@ const updateOrder = async function (req, res) {
         let userId = req.params.userId;
         let data = req.body;
         let orderId = data.orderId
+        let status = data.status
 
         if (!ObjectId.isValid(userId)) return res.status(400).send({ status: false, message: "User Id is invalid" })
 
@@ -74,6 +75,12 @@ const updateOrder = async function (req, res) {
         if (!ObjectId.isValid(data.orderId))
             return res.status(400).send({ status: false, message: "Enter a valid order-Id" })
 
+        if ("status" in data) {
+            if (!["cancelled", "completed"].includes(status)) return res.status(400).send({ status: false, message: "Cannot cancel order before placing. status should be [cancelled, completed]" })
+        }else{
+            status = "cancelled"
+        }
+
         let findOrder = await orderModel.findOne({
             _id: orderId,
             isDeleted: false
@@ -88,7 +95,7 @@ const updateOrder = async function (req, res) {
 
         if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "You cannot cancel this order" })
 
-        let orderUpdate = await orderModel.findOneAndUpdate({ _id: findOrder._id }, { status: "cancelled" }, { new: true }).select({ isDeleted: 0, __v: 0 })
+        let orderUpdate = await orderModel.findOneAndUpdate({ _id: findOrder._id }, { status: status }, { new: true }).select({ isDeleted: 0, __v: 0 })
         return res.status(200).send({
             status: true,
             message: "Success",
