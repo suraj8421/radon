@@ -112,13 +112,13 @@ const createUser = async function (req, res) {
             uploadedFileURL = await uploadFile(files[0])
         }
         else {
-            res.status(400).send({ msg: "No file found" })
+            res.status(400).send({ message: "profile image is required" })
         }
         body["profileImage"] = uploadedFileURL
 
 
         let usersData= await userModel.create(body)
-        return res.send({status:true,message:"User created successfully",usersData})
+        return res.status(201).send({status:true,message:"User created successfully",usersData})
     } catch (error) {
         return res.status(500).send({ message: "Server side Errors. Please try again later", error: error.message })
     }

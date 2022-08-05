@@ -72,7 +72,7 @@ const updateOrder = async function (req, res) {
                 status: false,
                 message: "OrderId is required and should not be an empty string",
             })
-        if (!ObjectId.isValid(data.orderId))
+        if (!ObjectId.isValid(orderId))
             return res.status(400).send({ status: false, message: "Enter a valid order-Id" })
 
         if ("status" in data) {
@@ -86,13 +86,13 @@ const updateOrder = async function (req, res) {
             isDeleted: false
         })
 
-        if (findOrder.status == "cancelled") return res.status(400).send({ status: false, message: "Order alreay cancelled" })
+        
         if (!findOrder)
             return res.status(404).send({
                 status: false,
                 message: `No order found with this '${orderId}' order-ID`,
             })
-
+        if (findOrder.status == "cancelled") return res.status(400).send({ status: false, message: "Order alreay cancelled" })
         if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "You cannot cancel this order" })
 
         let orderUpdate = await orderModel.findOneAndUpdate({ _id: findOrder._id }, { status: status }, { new: true }).select({ isDeleted: 0, __v: 0 })

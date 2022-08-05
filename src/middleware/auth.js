@@ -44,10 +44,10 @@ const autherization = async function(req,res,next){
             if(mongoose.Types.ObjectId.isValid(_id)==false) return res.status(400).send({status:false,message:"invalid id"});
         }
         let user= await userModel.findById({_id})
-        if(!user) return res.status(400).send({status:false,message:"user not found"})
+        if(!user) return res.status(404).send({status:false,message:"user not found"})
        
         if(req.userId !=_id)
-        return res.status(400).send({status:false,message:"not authorized"})
+        return res.status(403).send({status:false,message:"not authorized"})
         console.log("Autherization successfull ✅")
         next();
     }catch(err){

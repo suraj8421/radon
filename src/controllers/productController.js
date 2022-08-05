@@ -63,7 +63,8 @@ const createProduct = async function (req, res) {
         }
 
         /////////////////////////////////////////// isFreeShipping ///////////////////////////////////////////////////////
-        if (isFreeShipping !== "true" && isFreeShipping !=="false") return res.status(400).send({ status: false, message: "isFreeShipping should have only true or false" })
+        if("isFreeShipping" in req.body){
+        if (isFreeShipping !== "true" && isFreeShipping !=="false") return res.status(400).send({ status: false, message: "isFreeShipping should have only true or false" })}
 
         ////////////////////////////////////////// style validation ////////////////////////////////////////////////////////
         if("style" in body){
@@ -82,7 +83,8 @@ const createProduct = async function (req, res) {
     
 
         //////////////////////////////////////// installment validation ///////////////////////////////////////////////
-        if (!installmentRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })
+        if("installments" in body ){
+        if (!installmentRegex.test(installments)) return res.status(400).send({ status: false, message: "Enter a valid installment amount" })}
 
 
         ////////////////////////////////// checking unique title ///////////////////////////////////////////////////////
@@ -91,7 +93,7 @@ const createProduct = async function (req, res) {
 
         //////////////////////////////////////// Creating new product /////////////////////////////////////////////////
         let productData = await productModel.create(body)
-        return res.send({ status: true, message: "Product created successfully", productData })
+        return res.status(201).send({ status: true, message: "Product created successfully", productData })
     } catch (error) {
         console.log(error);
         return res.status(500).send({ message: "Server side Errors. Please try again later", error: error.message })
@@ -104,6 +106,16 @@ const createProduct = async function (req, res) {
 const getProduct = async function (req, res) {
     try {
         let data = req.query
+        for(let k in data){
+            
+            if (k.trim() !== "size" && k.trim() !== "name" && k.trim() !== "priceGreaterThan" && k.trim() !== "priceLessThan" && k.trim() !== "priceSort"){
+                return res.status(400).send({
+                status: false,
+                message: "body should only have: size, name, priceGreaterThan, priceLessThan, priceSort",
+            })
+            }
+        }
+
 
         let filter = { isDeleted: false }
 
@@ -307,7 +319,7 @@ const updateProduct=async function(req,res){
 
         let findProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { $set: dataToUpdate , $addToSet:{ availableSizes: availableSizes }}, { new: true })
 
-        if(!findProduct) return res.status(400).send({status:false,message:"product not found"})
+        if(!findProduct) return res.status(404).send({status:false,message:"product not found"})
 
 
         return res.status(200).send({ status: true, message: "Updated successfully", data: findProduct })
