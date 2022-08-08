@@ -9,9 +9,9 @@ const authentication = function (req, res, next) {
     try {
         let token=req.headers[`Authorization`];
         if(!token) token=req.headers[`authorization`];  
-        token = token.split(" ")[1] 
 
         if (!token) return res.status(401).send({ status: false, msg: "Token must be present in Headers" });
+        token = token.split(" ")[1] 
 
 
         let decodedToken = jwt.verify(token, "SECRET-OF-GROUP69", (error, decodedToken) => {

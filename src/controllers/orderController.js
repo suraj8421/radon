@@ -24,7 +24,7 @@ const createOrder = async function (req, res) {
             if (!["true", "false", true, false].includes(cancellable)) return res.status(400).send({ status: false, message: "cancellable should be only true or false" })
         }
         if ("status" in body) {
-            if (!["pending", "completed"].includes(status)) return res.status(400).send({ status: false, message: "Cannot cancel order before placing. status should be [pending, completed]" })
+            if (!["pending", "completed", "cancelled"].includes(status)) return res.status(400).send({ status: false, message: "Cannot cancel order before placing. status should be [pending, completed, cancelled]" })
         }
         let total = 0;
         for (let i = 0; i < cart.items.length; i++) {
@@ -74,12 +74,11 @@ const updateOrder = async function (req, res) {
             })
         if (!ObjectId.isValid(orderId))
             return res.status(400).send({ status: false, message: "Enter a valid order-Id" })
-
-        if ("status" in data) {
-            if (!["cancelled", "completed"].includes(status)) return res.status(400).send({ status: false, message: "Cannot cancel order before placing. status should be [cancelled, completed]" })
-        }else{
-            status = "cancelled"
-        }
+        
+        if (!status) return res.status(400).send({ status: false, message: "status is required" })
+    
+        if (!["cancelled", "completed", "pending"].includes(status)) return res.status(400).send({ status: false, message: "status should be [cancelled, completed, pending]" })
+      
 
         let findOrder = await orderModel.findOne({
             _id: orderId,
@@ -92,8 +91,19 @@ const updateOrder = async function (req, res) {
                 status: false,
                 message: `No order found with this '${orderId}' order-ID`,
             })
-        if (findOrder.status == "cancelled") return res.status(400).send({ status: false, message: "Order alreay cancelled" })
-        if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "You cannot cancel this order" })
+   
+
+        if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "You cannot cancel this order. Not a cancellable order" })
+
+        if(findOrder.cancellable === true){
+            if (findOrder.status === "cancelled") return res.status(400).send({ status: false, message: "This is cancelled order. Cannot update status" })
+            if (findOrder.status === "completed") return res.status(400).send({ status: false, message: "This order is completed. Cannot update status" })
+            if (status === "pending") {
+                if (findOrder.status === "pending") return res.status(400).send({ status: false, message: "The status of this order is already in pending state. Please try other status" })
+            }
+        }
+
+        
 
         let orderUpdate = await orderModel.findOneAndUpdate({ _id: findOrder._id }, { status: status }, { new: true }).select({ isDeleted: 0, __v: 0 })
         return res.status(200).send({
